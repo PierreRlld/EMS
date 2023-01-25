@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 from math import floor
 from shutil import copytree
-from zp_configure import base_path, clean_path
+from folder_pth import *
 
 #--------------------
 def rebaser(df):

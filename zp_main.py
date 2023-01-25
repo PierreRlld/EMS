@@ -1,6 +1,6 @@
-#global base_path, clean_path, output_dir, cover_dir
 from zp_configure import *
-#from zp_configure import base_path, clean_path, output_dir, cover_dir
+from folder_pth import *
+
 
 #--------------------
 def get_dic(Name, Name_path):  

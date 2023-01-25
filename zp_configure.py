@@ -10,17 +10,17 @@ import pandas as pd
 import numpy as np
 from shutil import copytree, rmtree
 from file_manip import chapt_renamer, mode_RemoveVol, rebaser
-global today, base_path, clean_path, output_dir, cover_dir
+#global today, base_path, clean_path, output_dir, cover_dir
 today = datetime.today().strftime('%Y-%m-%d %S')
 
 
 #====================================================
 #======== TO_EDIT ===================================
 #====================================================
-base_path = "/Users/prld/Documents/222Mangas/"
-clean_path = "/Users/prld/Documents/222Mangas_clean/"
-output_dir = '/Users/prld/Documents/222upl_output/'
-cover_dir = '/Users/prld/Desktop/git_proj/EMS/covers'
+#base_path = "/Users/prld/Documents/222Mangas/"
+#clean_path = "/Users/prld/Documents/222Mangas_clean/"
+#output_dir = '/Users/prld/Documents/222upl_output/'
+#cover_dir = '/Users/prld/Desktop/git_proj/EMS/covers'
 
 
 #----------------------------------------------------
