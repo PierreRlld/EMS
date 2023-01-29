@@ -1,4 +1,3 @@
-#%%
 import bs4
 from urllib import request
 import requests
@@ -28,14 +27,24 @@ def cover_link_scraper(url):
     return layer
 
 #--------------------
-#--------------------
-'/Users/prld/Desktop/git_proj/EMS/covers/OP'
+#--------------------   
 def cov_dl(url, manga):
     dic = cover_link_scraper(url)
-    for vol in list(dic.keys()):
-        link = dic[vol]
-        page = url_request(link)
-        img = page.find('div',{'class':'img imgboxart issue-cover'}).find('img').get('src')
-        pth = os.path.join(cover_dir+manga, vol+".jpg")
-        with open(pth, "wb") as f:
-            f.write(requests.get(img).content)
+
+    if os.path.exists(cover_dir+manga) == False:
+        os.mkdir(os.path.join(cover_dir,manga))
+    else:
+        pass
+    
+    nb_dl = len(list(dic.keys()))
+    with tqdm(total=nb_dl) as pbar:
+        for vol in list(dic.keys()):
+            link = dic[vol]
+            page = url_request(link)
+            img = page.find('div',{'class':'img imgboxart issue-cover'}).find('img').get('src')
+            pth = os.path.join(cover_dir+manga, vol+".jpg")
+            with open(pth, "wb") as f:
+                f.write(requests.get(img).content)  
+            pbar.update(1)
+
+cov_dl('https://comicvine.gamespot.com/sakamoto-days/4050-135095/','SakDays')
