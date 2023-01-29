@@ -72,13 +72,13 @@ def meta_group_chapt(arc, manga, vol_format, el_list, volumes, pth, dic, TBD):
 def zanpa(manga: str, scan_mode, arc=False):
     '''
     @manga : name to be saved as = name in zanpa_file.xlsx
-    @manga_path : download name from Hakuneko
     @mode : [scan_start, scan_end] or "all"
+    @arc : pour ceux où format Arc dispo
     '''
     set = get_settings(manga)
     manga_dic = get_dic(manga, set['Manga_path'])
     manga_path = set['Manga_path']
-    print('Converting '+manga_path)
+    print('>>> Converting '+manga_path)
     dir_name = clean_path+manga_path+"*"
 
     chapt_renamer(Name_path=set['Manga_path'], vol_format=set['Vol_format'], mode=scan_mode, dic=manga_dic, volumes=int(set['Volumes']))    #>>enregistrés dans dir_name
@@ -109,4 +109,5 @@ def zanpa(manga: str, scan_mode, arc=False):
                             zip_file.write(file, arcname=file[len(clean_path)::])
                 pbar.update(1)
             else:pass
+    print('Done ✅')
     rmtree(clean_path+manga_path+'*')

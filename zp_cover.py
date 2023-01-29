@@ -68,7 +68,11 @@ def cov_dl(url, manga, update):
 
 #--------------------
 #--------------------
-def zp_cover_dl(url, manga):
+def zp_cover_dl(manga):
+
+    df = pd.read_excel("zanpa_file.xlsx", sheet_name="COVER")
+    df = df.set_index(keys='Manga',drop=True)
+    url = df.loc[manga,'URL']
 
     try:
         nul = '.DS_Store' in os.listdir(cover_dir+manga)
@@ -77,12 +81,13 @@ def zp_cover_dl(url, manga):
         dispo=0
 
     pages = pages_list(url)
+    print('>>> Downloading {0} volume covers'.format(manga))
     for page in pages :
-        print('Downloading page {0}/{1}'.format(pages.index(page)+1, len(pages)))
+        #print('Downloading page {0}/{1}'.format(pages.index(page)+1, len(pages)))
         if cov_dl(url = page, manga = manga, update = dispo) == False:
             print('Done ✅')
             return None
 
-zp_cover_dl(url="https://comicvine.gamespot.com/one-piece/4050-21397/", manga="OP")
+#zp_cover_dl(manga="TK")
 #cov_dl(url="https://comicvine.gamespot.com/sakamoto-days/4050-135095/", manga='SakDays', update = 9)
 
