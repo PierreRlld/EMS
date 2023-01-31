@@ -47,7 +47,7 @@ def cov_dl(url, manga, update):
     next_page = True
     page_volumes = list(dic.keys())
     for key in page_volumes :
-        if key<update:
+        if key<=update:
             del dic[key]
             next_page=False #Sert de break pour pas aller voir les pages suivantes
 
@@ -57,6 +57,7 @@ def cov_dl(url, manga, update):
     nb_dl = len(list(dic.keys()))
     with tqdm(total=nb_dl) as pbar:
         for vol in list(dic.keys()):
+            print(vol)
             link = dic[vol]
             page = url_request(link)
             img = page.find('div',{'class':'img imgboxart issue-cover'}).find('img').get('src')
@@ -72,7 +73,11 @@ def zp_cover_dl(manga):
 
     df = pd.read_excel("zanpa_file.xlsx", sheet_name="COVER")
     df = df.set_index(keys='Manga',drop=True)
-    url = df.loc[manga,'URL']
+    try:
+        url = df.loc[manga,'URL']
+    except:
+        print('Cover pas dispo ☓')
+        return None
 
     try:
         nul = '.DS_Store' in os.listdir(cover_dir+manga)
@@ -90,4 +95,3 @@ def zp_cover_dl(manga):
 
 #zp_cover_dl(manga="TK")
 #cov_dl(url="https://comicvine.gamespot.com/sakamoto-days/4050-135095/", manga='SakDays', update = 9)
-

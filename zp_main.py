@@ -2,17 +2,17 @@ from zp_configure import *
 from folder_pth import *
 
 #-----------------------
-def get_settings(Name): 
-    set = pd.read_excel('zanpa_file.xlsx', sheet_name='SETTINGS')
+def get_settings(Name, xlsx): 
+    set = pd.read_excel(xlsx, sheet_name='SETTINGS')
     set = set.set_index(keys='Manga',drop=True)
     set['TBD']=set['TBD'].apply(lambda x: x==True)
     #return list(set.loc[Name])
     return set.loc[Name].to_dict()
 
 #-----------------------
-def get_dic(Name, Name_path):  
+def get_dic(Name, Name_path, xlsx):  
     try:
-        df = pd.read_excel('zanpa_file.xlsx', sheet_name=Name, usecols= 'A:B')
+        df = pd.read_excel(xlsx, sheet_name=Name, usecols= 'A:B')
         df_dic = pd.Series(df.Vol.values, index=df.Chapt).to_dict()
         return df_dic
     except:
@@ -28,16 +28,17 @@ def get_dic(Name, Name_path):
         return spe_dic
 
 #-----------------------   
-def get_dic_arc(Name, arc):
+def get_dic_arc(Name, arc, xlsx):
     if arc==True:
-        df = pd.read_excel('zanpa_file.xlsx', sheet_name=Name+"_Arc", usecols="A:E")
+        df = pd.read_excel(xlsx, sheet_name=Name+"_Arc", usecols="A:E")
         df_dic = pd.Series(df.Arc.values, index=df.Vol).to_dict()
         return df_dic
     else:
         return None
 
 #-----------------------
-def meta_group_chapt(arc, manga, vol_format, el_list, volumes, pth, dic, TBD):
+# ================ PB ================
+def meta_group_chapt2(arc, manga, vol_format, el_list, volumes, pth, dic, TBD):
     long = len(pth) + 1
 
     def dic_arc_check(vol):
@@ -48,7 +49,7 @@ def meta_group_chapt(arc, manga, vol_format, el_list, volumes, pth, dic, TBD):
             return vol
     
     if arc==True:
-        dic_arc = get_dic_arc(manga, arc)   # {vol:'arc'}
+        dic_arc = get_dic_arc(manga, arc)
         group = {i:[] for i in list(np.unique(np.array(list(dic_arc.values())))) }
     else:
         dic_arc=None
@@ -66,6 +67,32 @@ def meta_group_chapt(arc, manga, vol_format, el_list, volumes, pth, dic, TBD):
             group[dic_arc_check(vol)].append(el)
     return group    
 
+def meta_group_chapt(vol_format, el_list, volumes, pth, dic, TBD, arc, dic_arc):
+    long = len(pth) + 1
+
+    def dic_arc_check(vol):
+        #nonlocal dic_arc
+        if arc==True:
+            return dic_arc[vol]
+        else:
+            return vol
+    
+    if arc==True:
+        group = {i:[] for i in list(np.unique(np.array(list(dic_arc.values())))) }
+    else:
+        group = {i:[] for i in range(1,volumes+1)}
+        if TBD==True:
+            group['TBD'] = []
+
+    if vol_format == 1:
+        for el in el_list:
+            vol = dic[round(float(el[long::].split(' ')[1].split('-')[1].split('/')[0]))]   #<Vol.XX Chapter-XX>
+            group[dic_arc_check(vol)].append(el)
+    else:   #2.1 ou 2.2
+        for el in el_list:
+            vol = dic[round(float(el[long::].split('-')[1].split('/')[0]))] #<Chapter-XX>
+            group[dic_arc_check(vol)].append(el)
+    return group    
 
 #-----------------------
 #-----------------------
@@ -75,17 +102,20 @@ def zanpa(manga: str, scan_mode, arc=False):
     @mode : [scan_start, scan_end] or "all"
     @arc : pour ceux où format Arc dispo
     '''
-    set = get_settings(manga)
-    manga_dic = get_dic(manga, set['Manga_path'])
+    xlsx = pd.ExcelFile('zanpa_file.xlsx')
+    set = get_settings(manga, xlsx)
+    manga_dic = get_dic(manga, set['Manga_path'], xlsx)
+    manga_arc_dic = get_dic_arc(manga, arc, xlsx)
     manga_path = set['Manga_path']
     print('>>> Converting '+manga_path)
     dir_name = clean_path+manga_path+"*"
 
-    chapt_renamer(Name_path=set['Manga_path'], vol_format=set['Vol_format'], mode=scan_mode, dic=manga_dic, volumes=int(set['Volumes']))    #>>enregistrés dans dir_name
+    chapt_renamer(Name_path=set['Manga_path'], vol_format=set['Vol_format'], mode=scan_mode, dic=manga_dic, 
+                  volumes=int(set['Volumes']), arc=arc, manga=manga, xlsx=xlsx)                                        #>>enregistrés dans dir_name
     filePaths = retrieve_file_paths(dir_name)
     
-    grouped = meta_group_chapt(arc=arc, manga=manga, vol_format=set['Vol_format'], el_list=filePaths[1::], volumes=int(set['Volumes']), 
-                                pth=dir_name, dic=manga_dic, TBD=set['TBD'])   #.DS_Store à enlever
+    grouped = meta_group_chapt(vol_format=set['Vol_format'], el_list=filePaths[1::], volumes=int(set['Volumes']), 
+                                pth=dir_name, dic=manga_dic, TBD=set['TBD'], arc=arc, dic_arc=manga_arc_dic)   #.DS_Store à enlever
 
     fold_id = "_"+str(len(next(os.walk(output_dir))[1]))
     os.mkdir(os.path.join(output_dir, " ".join([today+fold_id, manga])))
@@ -111,3 +141,4 @@ def zanpa(manga: str, scan_mode, arc=False):
             else:pass
     print('Done ✅')
     rmtree(clean_path+manga_path+'*')
+    print('28ix®')
