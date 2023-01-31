@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 from math import floor
 from shutil import copytree
-from folder_pth import *
+from zp_folder_pth import *
 
 #--------------------
 def rebaser(df):
@@ -99,8 +99,10 @@ def chapt_renamer(Name_path, vol_format, mode, dic, volumes, arc, manga, xlsx):
         if vol_format==1:
             #_"Vol.XX Ch.XX"   >>OK
             vol = chapt.split(' ')[0]
-            num = chapt.split(' ')[1].split('.')[1]
-            #num = chapt.split(' ')[2] #VAGABOND !
+            if Name_path == 'Vagabond':
+                num = chapt.split(' ')[2] #VAGABOND !
+            else:
+                num = chapt.split(' ')[1].split('.')[1]
             '''
             #Vol.01 Ch.003 - Watch Out! 
             Vol.1 Chapter 4  The Brigand Tsujikaze
@@ -114,11 +116,15 @@ def chapt_renamer(Name_path, vol_format, mode, dic, volumes, arc, manga, xlsx):
             vol = ""
             num = chapt.split(' ')[1]
         
-        if dic[round(float(num))] in to_del:
-            pass
-        else:
-            df.loc[i] = [chapt, float(num), vol]
-            i+=1
+        try:
+            if dic[round(float(num))] in to_del:
+                pass
+            else:
+                df.loc[i] = [chapt, float(num), vol]
+                i+=1
+        except:
+            print('<!> Error zanpa_file.xlsx not up to date!\n<!> Cannot handle {0} files until update.'.format(Name_path))
+            quit()
 
     df=rebaser(df)
     for j in range(len(df)):

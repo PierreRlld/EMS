@@ -26,6 +26,8 @@ def input_client():
         cover_update = True
     else:
         cover_update = False
+
+    print('----------------------------')
     
     if cover_update == True:
         zp_cover_dl(manga = manga_name)

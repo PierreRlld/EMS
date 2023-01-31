@@ -2,7 +2,7 @@ import bs4
 from urllib import request
 import requests
 from zp_configure import *
-from folder_pth import *
+from zp_folder_pth import *
 
 op_url = 'https://comicvine.gamespot.com/one-piece/4050-21397/'
 

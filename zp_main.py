@@ -1,5 +1,5 @@
 from zp_configure import *
-from folder_pth import *
+from zp_folder_pth import *
 
 #-----------------------
 def get_settings(Name, xlsx): 
