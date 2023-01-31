@@ -1,5 +1,4 @@
 # EMS
-E-Manga-Scan
 
 | Manga_code_name | Manga_path                   | Status | Volumes | Last update |
 | --------------- | ---------------------------- | ------ | ------- | ----------- |
