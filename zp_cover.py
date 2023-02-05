@@ -4,8 +4,6 @@ import requests
 from zp_configure import *
 from zp_folder_pth import *
 
-op_url = 'https://comicvine.gamespot.com/one-piece/4050-21397/'
-
 #--------------------
 def url_request(url):
     reqt = request.urlopen(url).read()
@@ -57,7 +55,6 @@ def cov_dl(url, manga, update):
     nb_dl = len(list(dic.keys()))
     with tqdm(total=nb_dl) as pbar:
         for vol in list(dic.keys()):
-            print(vol)
             link = dic[vol]
             page = url_request(link)
             img = page.find('div',{'class':'img imgboxart issue-cover'}).find('img').get('src')
@@ -93,5 +90,7 @@ def zp_cover_dl(manga):
             print('Done ✅')
             return None
 
-#zp_cover_dl(manga="TK")
-#cov_dl(url="https://comicvine.gamespot.com/sakamoto-days/4050-135095/", manga='SakDays', update = 9)
+#cov_dl(url="https://comicvine.gamespot.com/gto/4050-32732/", manga='GTO', update=0)
+
+if __name__ == "__main__":
+    zp_cover_dl(manga = "20thCB")

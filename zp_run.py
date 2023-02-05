@@ -1,7 +1,7 @@
 from zp_main import *
 from zp_cover import *
 
-#==== CHAPTERS ====
+#==== RUN ====
 if __name__ == "__main__":
     manga_name = "Bleach"
     scan_mode = [120,130]
