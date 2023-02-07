@@ -37,36 +37,6 @@ def get_dic_arc(Name, arc, xlsx):
         return None
 
 #-----------------------
-# ================ PB ================
-def meta_group_chapt2(arc, manga, vol_format, el_list, volumes, pth, dic, TBD):
-    long = len(pth) + 1
-
-    def dic_arc_check(vol):
-        nonlocal dic_arc
-        if arc==True:
-            return dic_arc[vol]
-        else:
-            return vol
-    
-    if arc==True:
-        dic_arc = get_dic_arc(manga, arc)
-        group = {i:[] for i in list(np.unique(np.array(list(dic_arc.values())))) }
-    else:
-        dic_arc=None
-        group = {i:[] for i in range(1,volumes+1)}
-        if TBD==True:
-            group['TBD'] = []
-
-    if vol_format == 1:
-        for el in el_list:
-            vol = dic[round(float(el[long::].split(' ')[1].split('-')[1].split('/')[0]))]   #<Vol.XX Chapter-XX>
-            group[dic_arc_check(vol)].append(el)
-    else:   #2.1 ou 2.2
-        for el in el_list:
-            vol = dic[round(float(el[long::].split('-')[1].split('/')[0]))] #<Chapter-XX>
-            group[dic_arc_check(vol)].append(el)
-    return group    
-
 def meta_group_chapt(vol_format, el_list, volumes, pth, dic, TBD, arc, dic_arc):
     long = len(pth) + 1
 
@@ -84,6 +54,10 @@ def meta_group_chapt(vol_format, el_list, volumes, pth, dic, TBD, arc, dic_arc):
         if TBD==True:
             group['TBD'] = []
 
+    for el in el_list:
+        vol = dic[round(float(el[long::].split(' ')[1].split('-')[1].split('/')[0]))]   #<Vol.XX Chapter-XX>
+        group[dic_arc_check(vol)].append(el)
+    '''
     if vol_format == 1:
         for el in el_list:
             vol = dic[round(float(el[long::].split(' ')[1].split('-')[1].split('/')[0]))]   #<Vol.XX Chapter-XX>
@@ -92,6 +66,7 @@ def meta_group_chapt(vol_format, el_list, volumes, pth, dic, TBD, arc, dic_arc):
         for el in el_list:
             vol = dic[round(float(el[long::].split('-')[1].split('/')[0]))] #<Chapter-XX>
             group[dic_arc_check(vol)].append(el)
+    '''
     return group    
 
 #-----------------------
@@ -140,5 +115,5 @@ def zanpa(manga: str, scan_mode, arc=False):
                 pbar.update(1)
             else:pass
     print('Done ✅')
-    rmtree(clean_path+manga_path+'*')
+    rmtree(clean_path+manga_path+'*', ignore_errors=True)
     print('28ix®')

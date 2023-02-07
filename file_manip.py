@@ -91,14 +91,22 @@ def chapt_renamer(Name_path, vol_format, mode, dic, volumes, arc, manga, xlsx):
     df = pd.DataFrame({'chapt':[], 'num':[], 'vol':[]})
     i=0
     chapt_list = os.listdir(base_path+Name_path)
+    nul = [".DS_Store", "._.DS_Store"]
+    for ele in nul:
+        try:
+            chapt_list.remove(ele)
+        except:
+            pass
+
     try:
-        chapt_list.remove(".DS_Store")
-    except:pass
+        pass
+    except:
+        print('<!> Error zanpa_file.xlsx not up to date!\n<!> Cannot handle {0} files until update.'.format(Name_path))
+        quit()
 
     for chapt in chapt_list:
         if vol_format==1:
             #_"Vol.XX Ch.XX"   >>OK
-            vol = chapt.split(' ')[0]
             if Name_path == 'Vagabond':
                 num = chapt.split(' ')[2] #VAGABOND !
             else:
@@ -109,25 +117,22 @@ def chapt_renamer(Name_path, vol_format, mode, dic, volumes, arc, manga, xlsx):
             '''
         elif vol_format==2.1:
             #_"Ch.XX"          >>OK
-            vol = ""
             num = chapt.split(' ')[0].split('.')[1]
         else:
             #_"Chapter XX ..." >>OK
-            vol = ""
             num = chapt.split(' ')[1]
-        
         try:
-            if dic[round(float(num))] in to_del:
+            vol = dic[round(float(num))]
+            if vol in to_del:
                 pass
             else:
                 df.loc[i] = [chapt, float(num), vol]
                 i+=1
         except:
-            print('<!> Error zanpa_file.xlsx not up to date!\n<!> Cannot handle {0} files until update.'.format(Name_path))
-            quit()
+            pass
 
     df=rebaser(df)
     for j in range(len(df)):
         copytree(base_path+Name_path+"/"+str(df.loc[j,"chapt"]), save_path+"/"+str(df.loc[j,"chapt"]))
-        os.rename(save_path+"/"+str(df.loc[j,"chapt"]), save_path+"/"+df.loc[j,"vol"]+" Chapter-"+f'{df.loc[j,"clean_chapt"]:.2f}') #pour garder 1.10 par ex et pas passer en 1.1
+        os.rename(save_path+"/"+str(df.loc[j,"chapt"]), save_path+"/"+"Vol."+str(df.loc[j,"vol"])+" Chapter-"+f'{df.loc[j,"clean_chapt"]:.2f}') #pour garder 1.10 par ex et pas passer en 1.1
 

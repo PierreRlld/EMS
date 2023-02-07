@@ -3,8 +3,8 @@ from zp_cover import *
 
 #==== RUN ====
 if __name__ == "__main__":
-    manga_name = "Bleach"
-    scan_mode = [120,130]
+    manga_name = "Jojo2"
+    scan_mode = [616,626]
     arc = False
     cover_update = True
 
