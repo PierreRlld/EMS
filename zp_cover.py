@@ -83,7 +83,7 @@ def zp_cover_dl(manga):
         dispo=0
 
     pages = pages_list(url)
-    print('>>> Downloading {0} volume covers'.format(manga))
+    print('>>> Downloading {0} covers'.format(manga))
     for page in pages :
         #print('Downloading page {0}/{1}'.format(pages.index(page)+1, len(pages)))
         if cov_dl(url = page, manga = manga, update = dispo) == False:
@@ -91,6 +91,3 @@ def zp_cover_dl(manga):
             return None
 
 #cov_dl(url="https://comicvine.gamespot.com/gto/4050-32732/", manga='GTO', update=0)
-
-if __name__ == "__main__":
-    zp_cover_dl(manga = "20thCB")

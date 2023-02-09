@@ -15,11 +15,20 @@ def get_dic(Name, Name_path, xlsx):
         df = pd.read_excel(xlsx, sheet_name=Name, usecols= 'A:B')
         df_dic = pd.Series(df.Vol.values, index=df.Chapt).to_dict()
         return df_dic
-    except:
+    except ValueError:
         chapt_list = os.listdir(base_path+Name_path)
+        nul = [".DS_Store", "._.DS_Store"]
+        for ele in nul:
+            try:
+                chapt_list.remove(ele)
+            except:
+                pass
         spe_dic={}
         for el in chapt_list:
-            chapt = round(float(el.split(' ')[1].split('.')[1]))  #<Vol.XX Chapter-XX>
+            if Name_path=='Vagabond':
+                chapt = round(float(el.split(' ')[2]))
+            else:
+                chapt = round(float(el.split(' ')[1].split('.')[1]))  #<Vol.XX Chapter.XX>
             try:
                 vol = round(float(el.split(' ')[0].split('.')[1]))
             except:
@@ -37,7 +46,7 @@ def get_dic_arc(Name, arc, xlsx):
         return None
 
 #-----------------------
-def meta_group_chapt(vol_format, el_list, volumes, pth, dic, TBD, arc, dic_arc):
+def meta_group_chapt(el_list, volumes, pth, dic, TBD, arc, dic_arc):
     long = len(pth) + 1
 
     def dic_arc_check(vol):
@@ -89,7 +98,7 @@ def zanpa(manga: str, scan_mode, arc=False):
                   volumes=int(set['Volumes']), arc=arc, manga=manga, xlsx=xlsx)                                        #>>enregistrés dans dir_name
     filePaths = retrieve_file_paths(dir_name)
     
-    grouped = meta_group_chapt(vol_format=set['Vol_format'], el_list=filePaths[1::], volumes=int(set['Volumes']), 
+    grouped = meta_group_chapt(el_list=filePaths[1::], volumes=int(set['Volumes']), 
                                 pth=dir_name, dic=manga_dic, TBD=set['TBD'], arc=arc, dic_arc=manga_arc_dic)   #.DS_Store à enlever
 
     fold_id = "_"+str(len(next(os.walk(output_dir))[1]))

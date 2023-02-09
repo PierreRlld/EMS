@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 from math import floor
 from shutil import copytree
+from tqdm import tqdm
 from zp_folder_pth import *
 
 #--------------------
@@ -132,7 +133,9 @@ def chapt_renamer(Name_path, vol_format, mode, dic, volumes, arc, manga, xlsx):
             pass
 
     df=rebaser(df)
-    for j in range(len(df)):
-        copytree(base_path+Name_path+"/"+str(df.loc[j,"chapt"]), save_path+"/"+str(df.loc[j,"chapt"]))
-        os.rename(save_path+"/"+str(df.loc[j,"chapt"]), save_path+"/"+"Vol."+str(df.loc[j,"vol"])+" Chapter-"+f'{df.loc[j,"clean_chapt"]:.2f}') #pour garder 1.10 par ex et pas passer en 1.1
+    with tqdm(total=len(df)) as pbar:
+        for j in range(len(df)):
+            copytree(base_path+Name_path+"/"+str(df.loc[j,"chapt"]), save_path+"/"+str(df.loc[j,"chapt"]))
+            os.rename(save_path+"/"+str(df.loc[j,"chapt"]), save_path+"/"+"Vol."+str(df.loc[j,"vol"])+" Chapter-"+f'{df.loc[j,"clean_chapt"]:.2f}') #pour garder 1.10 par ex et pas passer en 1.1
+            pbar.update(1)
 
