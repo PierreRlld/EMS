@@ -75,3 +75,6 @@ Example:
 │       ├── test
 │       └── test
 ```
+
+## Notes
+- Si pb Kindle converter conversion zip avec erreur " '._(...).jpeg' corrompu " deziper et convertir le dossier

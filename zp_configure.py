@@ -18,13 +18,13 @@ def retrieve_file_paths(dirName):
   # dirName = "/Users/prld/Documents/Mangas/Bleach"
   # setup file paths variable
   filePaths = []
-   
   # Read all directory, subdirectories and file lists
   for root, directories, files in os.walk(dirName):
     for filename in files:
         # Create the full filepath by using os module.
         filePath = os.path.join(root, filename)
-        filePaths.append(filePath)
-         
-  # return all paths
+        if '/._' in filePath:
+          pass
+        else:
+          filePaths.append(filePath)
   return filePaths
