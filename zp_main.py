@@ -120,7 +120,10 @@ def zanpa(manga: str, scan_mode, arc=False):
                         pass
                     finally:
                         for file in vol:
-                            zip_file.write(file, arcname=file[len(clean_path)::])
+                            if "/._" in file[len(clean_path)::]:
+                                pass
+                            else:
+                                zip_file.write(file, arcname=file[len(clean_path)::])
                 pbar.update(1)
             else:pass
     print('Done ✅')
