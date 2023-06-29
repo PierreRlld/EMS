@@ -4,6 +4,7 @@ import numpy as np
 from math import floor
 from shutil import copytree
 from tqdm import tqdm
+import re
 from zp_folder_pth import *
 
 #--------------------
@@ -42,7 +43,11 @@ def mode_RemoveVol(mode, dic, volumes, arc, manga, xlsx):
     '''
     if type(mode)==list:
         start_vol = dic[mode[0]]
-        end_vol = dic[mode[1]]
+        end_vol = mode[1]
+        if end_vol == "max":
+            end_vol = max(list(dic.keys()))
+        else:
+            end_vol = dic[int(mode[1])]
         to_del = []
 
         if arc==True:
@@ -86,7 +91,7 @@ def mode_RemoveVol(mode, dic, volumes, arc, manga, xlsx):
 
 
 #--------------------
-def chapt_renamer(Name_path, vol_format, mode, dic, volumes, arc, manga, xlsx):
+def chapt_renamer(Name_path, mode, dic, volumes, arc, manga, xlsx):
     save_path = clean_path+Name_path+"*"
     to_del = mode_RemoveVol(mode, dic, volumes, arc, manga, xlsx)
     df = pd.DataFrame({'chapt':[], 'num':[], 'vol':[]})
@@ -106,6 +111,7 @@ def chapt_renamer(Name_path, vol_format, mode, dic, volumes, arc, manga, xlsx):
         quit()
 
     for chapt in chapt_list:
+        """
         if vol_format==1:
             #_"Vol.XX Ch.XX"   >>OK
             if Name_path == 'Vagabond':
@@ -122,6 +128,12 @@ def chapt_renamer(Name_path, vol_format, mode, dic, volumes, arc, manga, xlsx):
         else:
             #_"Chapter XX ..." >>OK
             num = chapt.split(' ')[1]
+        """
+        try:
+            y = re.search(r'Chapter \d+',chapt).group(0)
+        except:
+            y = re.search(r'Ch.\d+',chapt).group(0)
+        num = re.findall(r'\d+',y)[0]
         try:
             vol = dic[round(float(num))]
             if vol in to_del:

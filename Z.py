@@ -1,3 +1,4 @@
+# cd /Users/prld/Desktop/git_proj/EMS
 from zp_main import *
 from zp_cover import *
 
@@ -12,7 +13,7 @@ def input_client():
         else:
             start_scan = input('Start scan : ')
             end_scan = input('End scan : ')
-            scan_mode = [int(start_scan), int(end_scan)]
+            scan_mode = [int(start_scan), end_scan]
 
         #>> Couvertures
         cover_update = input('Update covers ? ')

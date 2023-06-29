@@ -76,11 +76,14 @@ def zp_cover_dl(manga):
         print('Cover pas dispo ☓')
         return None
 
-    try:
-        nul = '.DS_Store' in os.listdir(cover_dir+manga)
-        dispo = len(os.listdir(cover_dir+manga)) - nul
-    except:
-        dispo=0
+    if os.path.exists(cover_dir+manga) == False:
+        os.mkdir(os.path.join(cover_dir,manga))
+
+    covs = [ el for el in os.listdir(cover_dir+manga) if '._' not in el ]
+    nul = '.DS_Store' in covs
+    tbd = 'TBD.jpg' in covs
+    dispo = len(covs) - nul - tbd
+    print(dispo)
 
     pages = pages_list(url)
     print('>>> Downloading {0} covers'.format(manga))

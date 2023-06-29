@@ -1,5 +1,6 @@
 from zp_configure import *
 from zp_folder_pth import *
+#from file_manip import chapt_renamer
 
 #-----------------------
 def get_settings(Name, xlsx): 
@@ -89,12 +90,13 @@ def zanpa(manga: str, scan_mode, arc=False):
     xlsx = pd.ExcelFile('zanpa_file.xlsx')
     set = get_settings(manga, xlsx)
     manga_dic = get_dic(manga, set['Manga_path'], xlsx)
+    #print(manga_dic, len(manga_dic))
     manga_arc_dic = get_dic_arc(manga, arc, xlsx)
     manga_path = set['Manga_path']
     print('>>> Converting '+manga_path)
     dir_name = clean_path+manga_path+"*"
 
-    chapt_renamer(Name_path=set['Manga_path'], vol_format=set['Vol_format'], mode=scan_mode, dic=manga_dic, 
+    chapt_renamer(Name_path=set['Manga_path'], mode=scan_mode, dic=manga_dic, 
                   volumes=int(set['Volumes']), arc=arc, manga=manga, xlsx=xlsx)                                        #>>enregistrés dans dir_name
     filePaths = retrieve_file_paths(dir_name)
     

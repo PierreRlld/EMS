@@ -3,13 +3,14 @@
 ## Available
 
 - <a href="http://fanfox.net"><img src="https://favicon.malsync.moe/?domain=http://fanfox.net"> MangaFox</a>
+- <a href="https://mangafoxfull.com/manga/"><img src="https://favicon.malsync.moe/?domain=https://mangafoxfull.com/manga/"> MangaFoxFull</a>
 - <a href="https://manganato.com"><img src="https://favicon.malsync.moe/?domain=https://manganato.com"> MangaNato</a>
 
 | Manga_code_name | Manga_path                   | Status | Volumes | Last update | Source      |
 | --------------- | ---------------------------- | ------ | ------- | ----------- | ----------- |
-| BCL             | Black Clover                 | ✅      | 33      | 31/01/2023  | <a href="http://fanfox.net"><img src="https://favicon.malsync.moe/?domain=http://fanfox.net"> MangaFox</a>|
+| BCL             | Black Clover                 | ✅      | 33      | 25/06/2023  | <a href="http://fanfox.net"><img src="https://favicon.malsync.moe/?domain=http://fanfox.net"> MangaFox</a>|
 | Bleach          | Bleach                       | ✅      | 74      | \-          | <a href="http://fanfox.net"><img src="https://favicon.malsync.moe/?domain=http://fanfox.net"> MangaFox</a>|
-| CJX             | Choujin X                    | ✅      | 4       |             |             |
+| CJX             | Choujin X                    | ✅      | 4       | 25/06/2023  | <a href="https://mangafoxfull.com/manga/"><img src="https://favicon.malsync.moe/?domain=https://mangafoxfull.com/manga/"> MangaFoxFull</a>|
 | Conan           | Conan                        | ✅      | 103     |             |             |
 | Gamaran         | Gamaran                      | ✅      | 22      |             |             |
 | Gamaran_        | Gamaran_                     | ✅      | 22      |             |             |
@@ -19,11 +20,11 @@
 | HxH             | Hunter X Hunter              | ✅      | 37      |             |             |
 | JJK             | Jujutsu Kaisen               | ✅      | 21      |             |             |
 | Mashle          | Mashle                       | ✅      | 14      |             |             |
-| MHA             | Boku no Hero Academia        | ✅      | 36      |             |             |
+| MHA             | Boku no Hero Academia        | ✅      | 38      | 25/06/2023  |             |
 | OP              | One Piece                    | ✅      | 106     | 31/01/2023  |             |
 | OP_Arc          | One Piece                    | ✅      | 32      | 31/01/2023  |             |
 | OPman           | Onepunch-Man                 | ❌      | ..      |             |             |
-| SakDays         | Sakamoto Days                | ✅      | 9       |             |             |
+| SakDays         | Sakamoto Days                | ✅      | 12      | 25/06/2023  | <a href="http://fanfox.net"><img src="https://favicon.malsync.moe/?domain=http://fanfox.net"> MangaFox</a>|
 | SKR             | Sun-ken Rock                 | ✅      | 21      |             |             |
 | SpyF            | Spy X Family                 | ✅      | 10      |             |             |
 | SSY Lost Canva  | Saint Seiya - The Lost Canva | ❌      | .       |             |             |
