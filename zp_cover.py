@@ -83,7 +83,7 @@ def zp_cover_dl(manga):
     nul = '.DS_Store' in covs
     tbd = 'TBD.jpg' in covs
     dispo = len(covs) - nul - tbd
-    print(dispo)
+    #print(dispo)
 
     pages = pages_list(url)
     print('>>> Downloading {0} covers'.format(manga))

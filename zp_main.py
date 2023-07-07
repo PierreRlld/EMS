@@ -4,14 +4,14 @@ from zp_folder_pth import *
 
 #-----------------------
 def get_settings(Name, xlsx): 
-    set = pd.read_excel(xlsx, sheet_name='SETTINGS')
+    set = pd.read_excel(xlsx, sheet_name='SETTINGS', usecols='A:I')
     set = set.set_index(keys='Manga',drop=True)
     set['TBD']=set['TBD'].apply(lambda x: x==True)
     #return list(set.loc[Name])
     return set.loc[Name].to_dict()
 
 #-----------------------
-def get_dic(Name, Name_path, xlsx):  
+#def old_get_dic(Name, Name_path, xlsx):  
     try:
         df = pd.read_excel(xlsx, sheet_name=Name, usecols= 'A:B')
         df_dic = pd.Series(df.Vol.values, index=df.Chapt).to_dict()
@@ -37,8 +37,48 @@ def get_dic(Name, Name_path, xlsx):
             spe_dic[chapt]=vol
         return spe_dic
 
+def get_dic(Name, Name_path, xlsx):  
+    try:
+        df = pd.read_excel(xlsx, sheet_name='UPDATE')
+        sub = df[["Vol",Name]].copy()
+        sub = sub.dropna()
+        sub_dic = pd.Series(sub.Vol.values, index=sub[Name])
+        sub_dic.index = sub_dic.index.astype("int")
+        df_dic = {}
+        l = list(sub_dic.index)
+        l.reverse()
+
+        for j in range(l[0]+1):
+            df_dic[j] = sub_dic[l[0]]
+        for k in range(1,len(l)):
+            for j in range(l[k-1],l[k]+1):
+                df_dic[j] = sub_dic[l[k]]
+        return df_dic
+    
+    #except ValueError:
+    except KeyError:
+        chapt_list = os.listdir(base_path+Name_path)
+        nul = [".DS_Store", "._.DS_Store"]
+        for ele in nul:
+            try:
+                chapt_list.remove(ele)
+            except:
+                pass
+        spe_dic={}
+        for el in chapt_list:
+            if Name_path=='Vagabond':
+                chapt = round(float(el.split(' ')[2]))
+            else:
+                chapt = round(float(el.split(' ')[1].split('.')[1]))  #<Vol.XX Chapter.XX>
+            try:
+                vol = round(float(el.split(' ')[0].split('.')[1]))
+            except:
+                vol = 'TBD'
+            spe_dic[chapt]=vol
+        return spe_dic
+
 #-----------------------   
-def get_dic_arc(Name, arc, xlsx):
+#def get_dic_arc(Name, arc, xlsx):
     if arc==True:
         df = pd.read_excel(xlsx, sheet_name=Name+"_Arc", usecols="A:E")
         df_dic = pd.Series(df.Arc.values, index=df.Vol).to_dict()
@@ -83,25 +123,25 @@ def meta_group_chapt(el_list, volumes, pth, dic, TBD, arc, dic_arc):
 #-----------------------
 def zanpa(manga: str, scan_mode, arc=False):
     '''
-    @manga : name to be saved as = name in zanpa_file.xlsx
-    @mode : [scan_start, scan_end] or "all"
-    @arc : pour ceux où format Arc dispo
+    @manga : name to be saved as = name in origin.xlsx
+    @scan_mode : [scan_start, scan_end] / "all" / update
+    @arc : pas utilisé
     '''
-    xlsx = pd.ExcelFile('zanpa_file.xlsx')
+    xlsx = pd.ExcelFile('origin.xlsx')
     set = get_settings(manga, xlsx)
     manga_dic = get_dic(manga, set['Manga_path'], xlsx)
     #print(manga_dic, len(manga_dic))
-    manga_arc_dic = get_dic_arc(manga, arc, xlsx)
+    #manga_arc_dic = get_dic_arc(manga, arc, xlsx)
     manga_path = set['Manga_path']
     print('>>> Converting '+manga_path)
     dir_name = clean_path+manga_path+"*"
 
     chapt_renamer(Name_path=set['Manga_path'], mode=scan_mode, dic=manga_dic, 
-                  volumes=int(set['Volumes']), arc=arc, manga=manga, xlsx=xlsx)                                        #>>enregistrés dans dir_name
+                  volumes=int(set['Volumes']), arc=arc, manga=manga, xlsx=xlsx, TBD=set['TBD'])                                        #>>enregistrés dans dir_name
     filePaths = retrieve_file_paths(dir_name)
     
     grouped = meta_group_chapt(el_list=filePaths[1::], volumes=int(set['Volumes']), 
-                                pth=dir_name, dic=manga_dic, TBD=set['TBD'], arc=arc, dic_arc=manga_arc_dic)   #.DS_Store à enlever
+                                pth=dir_name, dic=manga_dic, TBD=set['TBD'], arc=False, dic_arc=None)   #.DS_Store à enlever
 
     fold_id = "_"+str(len(next(os.walk(output_dir))[1]))
     os.mkdir(os.path.join(output_dir, " ".join([today+fold_id, manga])))

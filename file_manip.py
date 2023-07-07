@@ -20,34 +20,25 @@ def rebaser(df):
         df.loc[mask,"clean_chapt"] = df.loc[mask,"floor_num"]+to_add
     return df
 
-#--------------------
-#def start_end(mode, dic, volumes, arc, manga):
-#    if arc==True:
-#        vol_list = np.array(pd.read_excel('zanpa_file.xlsx', sheet_name=manga+'_Arc', usecols= 'D:E')['End vol'].dropna().to_list())
-#        if dic[mode[0]] in vol_list:
-#            start_vol = int(vol_list[vol_list<=dic[mode[0]]].max())
-#        else:
-#            start_vol = int(vol_list[vol_list<=dic[mode[0]]].max())+1
-#        end_vol = int(vol_list[vol_list>=dic[mode[1]]].min())
-#    else:
-#        start_vol = dic[mode[0]]
-#        end_vol = dic[mode[1]]
-#    return [start_vol, end_vol]
-
-
 
 #--------------------
-def mode_RemoveVol(mode, dic, volumes, arc, manga, xlsx):
+def mode_RemoveVol(mode, dic, volumes, arc, manga, xlsx, TBD):
     '''
-    @mode: [scan_start,scan_finish] OR 'all'
+    @mode: [scan_start,scan_finish] OR 'update OR 'all'
     '''
-    if type(mode)==list:
-        start_vol = dic[mode[0]]
-        end_vol = mode[1]
-        if end_vol == "max":
-            end_vol = max(list(dic.keys()))
+    if type(mode)==list or mode=='update':
+        if mode == 'update':
+            if TBD==False:
+                return 'ERROR MODE REMOVE_VOL'
+            else:
+                start_vol, end_vol = 'TBD', 'TBD'
         else:
-            end_vol = dic[int(mode[1])]
+            start_vol = dic[mode[0]]
+            end_vol = mode[1]
+            if end_vol == "max":
+                end_vol = dic[int(max(list(dic.keys())))]
+            else:
+                end_vol = dic[int(mode[1])]
         to_del = []
 
         if arc==True:
@@ -75,7 +66,7 @@ def mode_RemoveVol(mode, dic, volumes, arc, manga, xlsx):
 
         else:
             if start_vol==end_vol=='TBD':
-                to_del.extend([i for i in range(1,volumes)])
+                to_del.extend([i for i in range(1,volumes+1)])
                 return to_del  
             else:     
                 to_del.extend([i for i in range(1,start_vol)])
@@ -91,9 +82,9 @@ def mode_RemoveVol(mode, dic, volumes, arc, manga, xlsx):
 
 
 #--------------------
-def chapt_renamer(Name_path, mode, dic, volumes, arc, manga, xlsx):
+def chapt_renamer(Name_path, mode, dic, volumes, arc, manga, xlsx, TBD):
     save_path = clean_path+Name_path+"*"
-    to_del = mode_RemoveVol(mode, dic, volumes, arc, manga, xlsx)
+    to_del = mode_RemoveVol(mode, dic, volumes, arc, manga, xlsx, TBD)
     df = pd.DataFrame({'chapt':[], 'num':[], 'vol':[]})
     i=0
     chapt_list = os.listdir(base_path+Name_path)
