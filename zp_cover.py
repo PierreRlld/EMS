@@ -68,7 +68,7 @@ def cov_dl(url, manga, update):
 #--------------------
 def zp_cover_dl(manga):
 
-    df = pd.read_excel("zanpa_file.xlsx", sheet_name="COVER")
+    df = pd.read_excel("origin.xlsx", sheet_name="COVER")
     df = df.set_index(keys='Manga',drop=True)
     try:
         url = df.loc[manga,'URL']

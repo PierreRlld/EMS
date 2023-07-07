@@ -9,7 +9,7 @@ import pandas as pd
 import numpy as np
 from shutil import copytree, rmtree
 today = str(datetime.today().strftime('%Y-%m-%d'))
-from file_manip import chapt_renamer, mode_RemoveVol, rebaser
+from zp_file_manip import chapt_renamer, mode_RemoveVol, rebaser
 
 
 #------------------------

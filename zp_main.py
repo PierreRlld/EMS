@@ -1,6 +1,5 @@
 from zp_configure import *
 from zp_folder_pth import *
-#from file_manip import chapt_renamer
 
 #-----------------------
 def get_settings(Name, xlsx): 
