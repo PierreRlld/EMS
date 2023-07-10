@@ -7,7 +7,7 @@ def input_client():
         manga_name = input('# Manga Code Name : ')
 
         #>> Scan_mode
-        scan_mode = input('# Scan mode : ')
+        scan_mode = input('# Scan mode [all,update,x] : ')
         if scan_mode in ['all','f','full','t','a']:
             scan_mode='all'
         elif scan_mode in ['update','up','u']:  # == on veut TBD !!
