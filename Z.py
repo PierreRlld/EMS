@@ -1,4 +1,3 @@
-# cd /Users/prld/Desktop/git_proj/EMS
 from zp_main import *
 from zp_cover import *
 

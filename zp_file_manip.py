@@ -24,18 +24,19 @@ def rebaser(df):
 #--------------------
 def mode_RemoveVol(mode, dic, volumes, arc, manga, xlsx, TBD):
     '''
-    @mode: [scan_start,scan_finish] OR 'update OR 'all'
+    @mode: [scan_start,scan_finish] OR 'TBD update' OR 'all'
     '''
-    if type(mode)==list or mode=='update':
-        if mode == 'update':
+    if type(mode)==list or mode=='TBD update':
+        if mode == 'TBD update':
             if TBD==False:
-                return 'ERROR MODE REMOVE_VOL'
+                print('ERROR MODE DANS REMOVE_VOL')
+                return 'ERROR MODE DANS REMOVE_VOL'
             else:
                 start_vol, end_vol = 'TBD', 'TBD'
         else:
             start_vol = dic[mode[0]]
             end_vol = mode[1]
-            if end_vol == "max":
+            if end_vol == "max":    # !!!! max qu'il faut rentrer dans cmd poru que ça marche
                 end_vol = dic[int(max(list(dic.keys())))]
             else:
                 end_vol = dic[int(mode[1])]
@@ -98,11 +99,11 @@ def chapt_renamer(Name_path, mode, dic, volumes, arc, manga, xlsx, TBD):
     try:
         pass
     except:
-        print('<!> Error zanpa_file.xlsx not up to date!\n<!> Cannot handle {0} files until update.'.format(Name_path))
+        print('<!> Error origin.xlsx not up to date!\n<!> Cannot handle {0} files until update.'.format(Name_path))
         quit()
 
     for chapt in chapt_list:
-        """
+        """ #old :)
         if vol_format==1:
             #_"Vol.XX Ch.XX"   >>OK
             if Name_path == 'Vagabond':

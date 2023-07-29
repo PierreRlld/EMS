@@ -124,7 +124,7 @@ def zanpa(manga: str, scan_mode, arc=False):
     '''
     @manga : name to be saved as = name in origin.xlsx
     @scan_mode : [scan_start, scan_end] / "all" / update
-    @arc : pas utilisé
+    @arc : pas utilisé...
     '''
     xlsx = pd.ExcelFile('origin.xlsx')
     set = get_settings(manga, xlsx)
