@@ -1,4 +1,4 @@
-from zp_configure import *
+from main.zp_configure import *
 from zp_folder_pth import *
 
 #-----------------------

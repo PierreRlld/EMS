@@ -9,12 +9,12 @@ import pandas as pd
 import numpy as np
 from shutil import copytree, rmtree
 today = str(datetime.today().strftime('%Y-%m-%d'))
-from zp_file_manip import chapt_renamer, mode_RemoveVol, rebaser
+from main.zp_file_manip import chapt_renamer, mode_RemoveVol, rebaser
 import re
 import inquirer
 from inquirer.themes import Default
 from blessed import Terminal
-from repo_check_size import *
+from main.repo_check_size import *
 
 
 #------------------------

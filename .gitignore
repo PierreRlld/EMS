@@ -1,8 +1,7 @@
-other/
+Icon
+archive/
 covers/
-brouillon.ipynb
 ~$*
-cover_rename.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
