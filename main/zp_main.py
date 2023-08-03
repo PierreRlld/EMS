@@ -35,6 +35,7 @@ def get_settings(Name, xlsx):
                 vol = 'TBD'
             spe_dic[chapt]=vol
         return spe_dic
+#-----------------------
 
 def get_dic(Name, Name_path, xlsx):  
     try:
@@ -65,14 +66,12 @@ def get_dic(Name, Name_path, xlsx):
                 pass
         spe_dic={}
         for el in chapt_list:
-            if Name_path=='Vagabond':
-                chapt = round(float(el.split(' ')[2]))
-            else:
-                chapt = round(float(el.split(' ')[1].split('.')[1]))  #<Vol.XX Chapter.XX>
             try:
-                vol = round(float(el.split(' ')[0].split('.')[1]))
+                y = re.search(r'Chapter \d+',el).group(0)
             except:
-                vol = 'TBD'
+                y = re.search(r'Ch.\d+',el).group(0)
+            chapt = round(float(re.findall(r'\d+',y)[0]))
+            vol = round(float(re.findall(r'\d+',re.search(r'Vol.\d+',el).group(0))[0]))
             spe_dic[chapt]=vol
         return spe_dic
 
@@ -169,4 +168,4 @@ def zanpa(manga: str, scan_mode, arc=False):
             else:pass
     print('Done ✅')
     rmtree(clean_path+manga_path+'*', ignore_errors=True)
-    print('28ix®')
+    #print('28ix®')
