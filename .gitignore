@@ -1,7 +1,11 @@
-Icon
 archive/
 covers/
 ~$*
+Icon
+Icon?
+.Icon
+*Icon
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
