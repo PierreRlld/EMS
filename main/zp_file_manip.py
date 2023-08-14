@@ -103,6 +103,7 @@ def chapt_renamer(Name_path, mode, dic, volumes, arc, manga, xlsx, TBD):
         quit()
 
     for chapt in chapt_list:
+        # !! Même code que get_dic !!
         """ #old :)
         if vol_format==1:
             #_"Vol.XX Ch.XX"   >>OK
@@ -124,7 +125,16 @@ def chapt_renamer(Name_path, mode, dic, volumes, arc, manga, xlsx, TBD):
         try:
             y = re.search(r'Chapter \d+',chapt).group(0)
         except:
-            y = re.search(r'Ch.\d+',chapt).group(0)
+            try:
+                y = re.search(r'Ch.\d+',chapt).group(0)
+            except:
+                # Format MangaSee ...
+                for x in hk_chapt_name:
+                    try:
+                        var = x + ' \d+'
+                        y = re.search(var,chapt).group(0)
+                    except:
+                        pass
         num = re.findall(r'\d+',y)[0]
         try:
             vol = dic[round(float(num))]

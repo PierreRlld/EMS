@@ -1,6 +1,7 @@
 from main.zp_main import *
 from main.zp_cover import *
 import openpyxl
+from openpyxl.styles import PatternFill, Alignment, Font
 
 term = Terminal()
 
@@ -15,14 +16,31 @@ class CustomTheme(Default):
         self.Checkbox.unselected_icon = "*"
 
 def name_code(name):
-    f = pd.read_excel("/Users/prld/git/EMS/origin.xlsx", sheet_name="SETTINGS",usecols="A,P")
+    f = pd.read_excel("/Users/prld/git/EMS/origin.xlsx", sheet_name="SETTINGS",usecols="A,O")
     df = dict(zip(f.edit_name, f.Manga))
     return df[name]
 
+def excel_col_name(x):
+    if x==0:
+        return()
+    if 1<=x<=26:
+        return chr(64+x)
+    r = int(x%26)
+    k = int((x-r)/26)
+    if r==0:
+        r=26
+        k-=1
+        return excel_col_name(k)+'Z'
+    else:
+        return excel_col_name(k)+excel_col_name(r)
+
+# ========================== #
+
 def manga_select():
 
-    f = pd.read_excel("origin.xlsx", sheet_name="SETTINGS",usecols="P,O")
+    f = pd.read_excel("origin.xlsx", sheet_name="SETTINGS",usecols="O,N")
     df = f[f['up.py']==True]['edit_name']
+    df.sort_values('edit_name',inplace=True)
     manga_list = df.to_list()
     q_manga = [
     inquirer.List(name='manga_choice',
@@ -65,8 +83,8 @@ def manga_select():
 
 def edit_origin():
 
-    f = pd.read_excel("origin.xlsx", sheet_name="SETTINGS",usecols="P,C")
-    df = f[f["Chapt"].isin(["F","*"])==False]['edit_name']
+    f = pd.read_excel("origin.xlsx", sheet_name="SETTINGS",usecols="O,C")
+    df = f[f["Chapt"].isin(["F"])==False]['edit_name']
     manga_list = df.to_list()
 
     q_manga = [
@@ -80,16 +98,36 @@ def edit_origin():
     if a_manga == "↪ Quit":
         quit()
     a_manga = name_code(a_manga)
+
+    wb = openpyxl.load_workbook('origin.xlsx')
+    ws = wb["UPDATE"]
+    ml = [c.value for c in ws["1"] if c.value != None]
+    col_n = ml.index(a_manga)+1
+
+    g = pd.read_excel("origin.xlsx", sheet_name="UPDATE",usecols="A,"+excel_col_name(col_n))
+
+    pd_wb = g[['Vol']].copy()
+    pd_wb["xl_rows"] = [k for k in range(2,len(pd_wb)+2)]
+    pd_wb = pd_wb.set_index("Vol",drop=True)
+    pd_wb = pd_wb.to_dict()["xl_rows"]
+
+    g = g.set_index("Vol",drop=True)
+    g.dropna(inplace=True)
+    g = g.astype({a_manga: int})
+    print(g.head().to_markdown())
+
     q_update = [
         inquirer.Text("vols", message="Vol à maj 'x,x' "),
         inquirer.Text("chapts", message="Chapt fin 'x,x' ")
     ]
     a_update = inquirer.prompt(q_update, theme=CustomTheme(), raise_keyboard_interrupt=True)
-
+    #----------
     vols = [x.replace(' ','') for x in a_update["vols"].split(',')]
+    if 'q' in a_update["vols"] or 'q' in a_update["chapts"]:
+        quit()
     for vol in vols:
         try:
-            int(vol)
+            vols[vols.index(vol)] = int(vol)
         except:
             if vol.lower() != 'tbd':
                 print(term.red('>> Value error in Volumes'))
@@ -102,46 +140,152 @@ def edit_origin():
         print(term.red('>> Value error in Chapts'))
         quit()
     updates = dict(zip(vols,chapts))
-    pd_wb = pd.read_excel("origin.xlsx", sheet_name="update_copy",usecols="A")
-    pd_wb["xl_rows"] = [k for k in range(2,len(pd_wb)+2)]
-    pd_wb = pd_wb.set_index("Vol",drop=True)
-    pd_wb = pd_wb.to_dict()["xl_rows"]
-
-    wb = openpyxl.load_workbook('origin.xlsx')
-    ws = wb["update_copy"]
-    ml = [c.value for c in ws["1"] if c.value != None]
-    col_n = ml.index(a_manga)+1
 
     for v in updates.keys():
         ws.cell(row=pd_wb[v],column=col_n).value = updates[v]
+        ws.cell(row=pd_wb[v],column=col_n).alignment = Alignment(horizontal="center", vertical="center")
     wb.save('origin.xlsx')
+    #print(term.gold3("➜ Aller maj onglet SETTINGS"))
     return()
 
+def add_origin():
+    q_manga = [
+    inquirer.Text(name='manga_choice',message="Code manga à ajouter dans origin")
+    ]
+    a_manga = inquirer.prompt(q_manga, theme=CustomTheme(), raise_keyboard_interrupt=True)['manga_choice']
+
+    wb = openpyxl.load_workbook('origin.xlsx')
+    ws = wb["UPDATE"]
+    ml = [c.value for c in ws["1"] if c.value != None]
+
+    if (a_manga.lower() in [x.lower() for x in ml]) == True:
+        print(term.gold3('➜ {} déjà dans UPDATE'.format(a_manga)))
+        edit_origin()
+    
+    else:
+        # +/- comme edit_origin()
+        q_add = [
+            inquirer.Text("vol_max", message="Volume max "),
+            inquirer.Text("chapts", message="Chapts fin pour tous les tomes 'x,x' ")
+        ]
+        a_add = inquirer.prompt(q_add, theme=CustomTheme(), raise_keyboard_interrupt=True)
+
+        vols = [k for k in range(1,int(a_add['vol_max'])+1)]
+        try:
+            chapts = [int(x) for x in a_add["chapts"].split(',')]
+        except ValueError:
+            print(term.red('>> Value error in Chapts'))
+            quit()
+        add = dict(zip(vols,chapts))
+        pd_wb = pd.read_excel("origin.xlsx", sheet_name="UPDATE",usecols="A")
+        pd_wb["xl_rows"] = [k for k in range(2,len(pd_wb)+2)]
+        pd_wb = pd_wb.set_index("Vol",drop=True)
+        pd_wb = pd_wb.to_dict()["xl_rows"]
+        col_n = len(ml)+1
+
+        nm = ws.cell(row=1,column=col_n)
+        nm.value = a_manga
+        nm.fill = PatternFill(fill_type='solid',start_color='00FFFF00',end_color='00FFFF00')
+        nm.font = Font(bold=True)
+        nm.alignment = Alignment(horizontal="center", vertical="center")
+
+        other_rows = [k for k in range(2,len(pd_wb)+2)]
+        for v in add.keys():
+            ws.cell(row=pd_wb[v],column=col_n).value = add[v]
+            ws.cell(row=pd_wb[v],column=col_n).alignment = Alignment(horizontal="center", vertical="center")
+            other_rows.remove(pd_wb[v])
+        for row in other_rows:
+            ws.cell(row=row,column=col_n).value = "=NA()"
+            if row == 2:
+                ws.cell(row=row,column=col_n).fill = PatternFill(fill_type='solid',start_color='00FFFF00',end_color='00FFFF00')
+        wb.save('origin.xlsx')
+        print(term.gold3("➜ Aller maj onglet SETTINGS"))
+        return()
+
+def source_dl():
+
+    f = pd.read_excel("origin.xlsx", sheet_name="SETTINGS",usecols="O,E,N,B")
+    f = f[f["up.py"]==True]
+    f.drop(labels="up.py",axis=1,inplace=True)
+    f.sort_values('edit_name',inplace=True)
+    m_list = f['edit_name'].to_list()
+
+    q_source = [
+        inquirer.Checkbox(name='source',
+                      message='',
+                      choices=m_list+['↪ Quit'])
+    ]
+    a_source = inquirer.prompt(q_source, theme=CustomTheme(), raise_keyboard_interrupt=True)["source"]
+
+    if '↪ Quit' in a_source:
+        quit()
+    else:
+        mask = f['edit_name'].isin(a_source)
+        df = f[mask][['Manga_path','Source']].copy()
+        df.sort_values('Source',inplace=True)
+        df.set_index('Source',drop=True,inplace=True)
+        print(df.to_markdown())
+    return()
+
+
+# ========================== #
 if __name__ == "__main__":
     print('-------------------------------------------------')
-    size = check_repo_size(git_pth)
-    print(">(info) Repo. Git plein à",str(round(100*(size/1000/1000),1))+"%\n")
+    try:
+        size = check_repo_size(git_pth)
+        print(">(info) Repo. Git plein à",str(round(100*(size/1000/1000),1))+"%\n")
+    except:
+        pass
 
-    edit_origin()
+    q_menu1 = [
+    inquirer.List(name='menu1',
+                    message="",
+                    choices=['DL',"Update 'origin.xlsx'",'Source HakuNeko']+['↪ Quit'],
+                    carousel=True,
+                )  
+    ]
+    a_menu1 = inquirer.prompt(q_menu1, theme=CustomTheme(), raise_keyboard_interrupt=True)["menu1"]
+
+    # ## edit origin.xlsx
+    if a_menu1 == "Update 'origin.xlsx'":
+        q_origin = [
+            inquirer.List(name='origin',
+                    message="",
+                    choices=['Edit manga','Add manga']+['↪ Quit'],
+                    carousel=True,
+                )  
+        ]
+        a_origin = inquirer.prompt(q_origin, theme=CustomTheme(), raise_keyboard_interrupt=True)["origin"]
+        if a_origin == 'Edit manga':
+            edit_origin()
+        elif a_origin == 'Add manga':
+            add_origin()
+        else:
+            quit()
 
     # ## scan download
-    """
-    main = manga_select()
-    print(term.gold3("➜ Update {} - Cover update {} - Scan {} ?".format(*main)))
-    conf = [
-    inquirer.List(name='conf',
-                  message="Confirm",
-                  choices=['Yes','No'],
-                  carousel=True)
-    ]
-    conf = inquirer.prompt(conf, theme=CustomTheme(), raise_keyboard_interrupt=True)['conf']
-    if conf == "No":
+    elif a_menu1 == "DL":
+        main = manga_select()
+        print(term.gold3("➜ Update {} - Cover update {} - Scan {} ?".format(*main)))
+        conf = [
+        inquirer.List(name='conf',
+                    message="Confirm",
+                    choices=['Yes','No'],
+                    carousel=True)
+        ]
+        conf = inquirer.prompt(conf, theme=CustomTheme(), raise_keyboard_interrupt=True)['conf']
+        if conf == "No":
+            quit()
+        print('-------------------------------------------------')
+        if main[1]==True:
+            zp_cover_dl(manga = main[0])
+        zanpa(manga=main[0], scan_mode=main[2], arc=False)
+    
+    elif a_menu1 == "Source HakuNeko":
+        source_dl()
+
+    else:
         quit()
-    print('-------------------------------------------------')
-    if main[1]==True:
-        zp_cover_dl(manga = main[0])
-    zanpa(manga=main[0], scan_mode=main[2], arc=False)
-    """
 
     # ##
     print(term.gray90('28ix®'))

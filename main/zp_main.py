@@ -9,34 +9,6 @@ def get_settings(Name, xlsx):
     #return list(set.loc[Name])
     return set.loc[Name].to_dict()
 
-#-----------------------
-#def old_get_dic(Name, Name_path, xlsx):  
-    try:
-        df = pd.read_excel(xlsx, sheet_name=Name, usecols= 'A:B')
-        df_dic = pd.Series(df.Vol.values, index=df.Chapt).to_dict()
-        return df_dic
-    except ValueError:
-        chapt_list = os.listdir(base_path+Name_path)
-        nul = [".DS_Store", "._.DS_Store"]
-        for ele in nul:
-            try:
-                chapt_list.remove(ele)
-            except:
-                pass
-        spe_dic={}
-        for el in chapt_list:
-            if Name_path=='Vagabond':
-                chapt = round(float(el.split(' ')[2]))
-            else:
-                chapt = round(float(el.split(' ')[1].split('.')[1]))  #<Vol.XX Chapter.XX>
-            try:
-                vol = round(float(el.split(' ')[0].split('.')[1]))
-            except:
-                vol = 'TBD'
-            spe_dic[chapt]=vol
-        return spe_dic
-#-----------------------
-
 def get_dic(Name, Name_path, xlsx):  
     try:
         df = pd.read_excel(xlsx, sheet_name='UPDATE')
@@ -69,20 +41,20 @@ def get_dic(Name, Name_path, xlsx):
             try:
                 y = re.search(r'Chapter \d+',el).group(0)
             except:
-                y = re.search(r'Ch.\d+',el).group(0)
+                try:
+                    y = re.search(r'Ch.\d+',el).group(0)
+                except:
+                    # Format MangaSee ...
+                    for x in hk_chapt_name:
+                        try:
+                            var = x + ' \d+'
+                            y = re.search(var,el).group(0)
+                        except:
+                            pass
             chapt = round(float(re.findall(r'\d+',y)[0]))
             vol = round(float(re.findall(r'\d+',re.search(r'Vol.\d+',el).group(0))[0]))
             spe_dic[chapt]=vol
         return spe_dic
-
-#-----------------------   
-#def get_dic_arc(Name, arc, xlsx):
-    if arc==True:
-        df = pd.read_excel(xlsx, sheet_name=Name+"_Arc", usecols="A:E")
-        df_dic = pd.Series(df.Arc.values, index=df.Vol).to_dict()
-        return df_dic
-    else:
-        return None
 
 #-----------------------
 def meta_group_chapt(el_list, volumes, pth, dic, TBD, arc, dic_arc):
@@ -122,7 +94,7 @@ def meta_group_chapt(el_list, volumes, pth, dic, TBD, arc, dic_arc):
 def zanpa(manga: str, scan_mode, arc=False):
     '''
     @manga : name to be saved as = name in origin.xlsx
-    @scan_mode : [scan_start, scan_end] / "all" / update
+    @scan_mode : [scan_start, scan_end] / "all" / update > scan_end (int) or "max"
     @arc : pas utilisé...
     '''
     xlsx = pd.ExcelFile('origin.xlsx')
@@ -168,4 +140,3 @@ def zanpa(manga: str, scan_mode, arc=False):
             else:pass
     print('Done ✅')
     rmtree(clean_path+manga_path+'*', ignore_errors=True)
-    #print('28ix®')
