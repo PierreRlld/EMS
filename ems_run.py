@@ -16,7 +16,7 @@ class CustomTheme(Default):
         self.Checkbox.unselected_icon = "*"
 
 def name_code(name):
-    f = pd.read_excel("/Users/prld/git/EMS/origin.xlsx", sheet_name="SETTINGS",usecols="A,O")
+    f = pd.read_excel("origin.xlsx", sheet_name="SETTINGS",usecols="A,O")
     df = dict(zip(f.edit_name, f.Manga))
     return df[name]
 
@@ -39,9 +39,9 @@ def excel_col_name(x):
 def manga_select():
 
     f = pd.read_excel("origin.xlsx", sheet_name="SETTINGS",usecols="O,N")
-    df = f[f['up.py']==True]['edit_name']
+    df = f[f['up.py']==True][['edit_name']]
     df.sort_values('edit_name',inplace=True)
-    manga_list = df.to_list()
+    manga_list = df['edit_name'].to_list()
     q_manga = [
     inquirer.List(name='manga_choice',
                     message="Quel manga à update",
@@ -84,8 +84,9 @@ def manga_select():
 def edit_origin():
 
     f = pd.read_excel("origin.xlsx", sheet_name="SETTINGS",usecols="O,C")
-    df = f[f["Chapt"].isin(["F"])==False]['edit_name']
-    manga_list = df.to_list()
+    df = f[f["Chapt"].isin(["F"])==False][['edit_name']]
+    df.sort_values('edit_name',inplace=True)
+    manga_list = df['edit_name'].to_list()
 
     q_manga = [
     inquirer.List(name='manga_choice',
@@ -115,6 +116,14 @@ def edit_origin():
     g.dropna(inplace=True)
     g = g.astype({a_manga: int})
     print(g.head().to_markdown())
+
+    decision = [
+        inquirer.List('decision',choices=['Edit','↪ Quit'],carousel=True)
+    ]
+    dec = inquirer.prompt(decision, theme=CustomTheme(), raise_keyboard_interrupt=True)['decision']
+
+    if dec == '↪ Quit':
+        quit()
 
     q_update = [
         inquirer.Text("vols", message="Vol à maj 'x,x' "),
@@ -240,14 +249,14 @@ if __name__ == "__main__":
     q_menu1 = [
     inquirer.List(name='menu1',
                     message="",
-                    choices=['DL',"Update 'origin.xlsx'",'Source HakuNeko']+['↪ Quit'],
+                    choices=['DL',"Access 'origin.xlsx'",'Source HakuNeko']+['↪ Quit'],
                     carousel=True,
                 )  
     ]
     a_menu1 = inquirer.prompt(q_menu1, theme=CustomTheme(), raise_keyboard_interrupt=True)["menu1"]
 
     # ## edit origin.xlsx
-    if a_menu1 == "Update 'origin.xlsx'":
+    if a_menu1 == "Access 'origin.xlsx'":
         q_origin = [
             inquirer.List(name='origin',
                     message="",
@@ -266,7 +275,7 @@ if __name__ == "__main__":
     # ## scan download
     elif a_menu1 == "DL":
         main = manga_select()
-        print(term.gold3("➜ Update {} - Cover update {} - Scan {} ?".format(*main)))
+        print(term.gold3("➜ DL {} - Cover update {} - Scan {} ?".format(*main)))
         conf = [
         inquirer.List(name='conf',
                     message="Confirm",
@@ -288,4 +297,4 @@ if __name__ == "__main__":
         quit()
 
     # ##
-    print(term.gray90('28ix®'))
+    print(term.gray90('\n28ix®'))
