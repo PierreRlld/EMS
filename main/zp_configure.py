@@ -7,7 +7,7 @@ from datetime import datetime
 from tqdm import tqdm
 import pandas as pd
 import numpy as np
-from shutil import copytree, rmtree
+from shutil import copytree, rmtree, move
 today = str(datetime.today().strftime('%Y-%m-%d'))
 from main.zp_file_manip import chapt_renamer, mode_RemoveVol, rebaser
 import re

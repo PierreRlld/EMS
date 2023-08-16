@@ -22,7 +22,7 @@ def rebaser(df):
 
 
 #--------------------
-def mode_RemoveVol(mode, dic, volumes, arc, manga, xlsx, TBD):
+def mode_RemoveVol(mode, dic, volumes, TBD):
     '''
     @mode: [scan_start,scan_finish] OR 'TBD update' OR 'all'
     '''
@@ -41,7 +41,8 @@ def mode_RemoveVol(mode, dic, volumes, arc, manga, xlsx, TBD):
             else:
                 end_vol = dic[int(mode[1])]
         to_del = []
-
+        '''
+        #rajouter manga, xlsx
         if arc==True:
             df = pd.read_excel(xlsx, sheet_name=manga+'_Arc', usecols= 'D:E')
             vol_list = np.array(df['End_Vol'].dropna().to_list())
@@ -64,28 +65,27 @@ def mode_RemoveVol(mode, dic, volumes, arc, manga, xlsx, TBD):
                 except:
                     pass
                 return to_del
-
-        else:
-            if start_vol==end_vol=='TBD':
-                to_del.extend([i for i in range(1,volumes+1)])
-                return to_del  
-            else:     
-                to_del.extend([i for i in range(1,start_vol)])
-                try:
-                    to_del.extend([j for j in range(end_vol+1, volumes+1)])
-                    if end_vol<volumes:
-                        to_del.append('TBD')
-                except:
-                    pass
-                return to_del
+        '''
+        if start_vol==end_vol=='TBD':
+            to_del.extend([i for i in range(1,volumes+1)])
+            return to_del  
+        else:     
+            to_del.extend([i for i in range(1,start_vol)])
+            try:
+                to_del.extend([j for j in range(end_vol+1, volumes+1)])
+                if end_vol<volumes:
+                    to_del.append('TBD')
+            except:
+                pass
+            return to_del
     else:
         return []
 
 
 #--------------------
-def chapt_renamer(Name_path, mode, dic, volumes, arc, manga, xlsx, TBD):
+def chapt_renamer(Name_path, mode, dic, volumes, TBD):
     save_path = clean_path+Name_path+"*"
-    to_del = mode_RemoveVol(mode, dic, volumes, arc, manga, xlsx, TBD)
+    to_del = mode_RemoveVol(mode, dic, volumes, TBD)
     df = pd.DataFrame({'chapt':[], 'num':[], 'vol':[]})
     i=0
     chapt_list = os.listdir(base_path+Name_path)
@@ -101,27 +101,9 @@ def chapt_renamer(Name_path, mode, dic, volumes, arc, manga, xlsx, TBD):
     except:
         print('<!> Error origin.xlsx not up to date!\n<!> Cannot handle {0} files until update.'.format(Name_path))
         quit()
-
+    
     for chapt in chapt_list:
         # !! Même code que get_dic !!
-        """ #old :)
-        if vol_format==1:
-            #_"Vol.XX Ch.XX"   >>OK
-            if Name_path == 'Vagabond':
-                num = chapt.split(' ')[2] #VAGABOND !
-            else:
-                num = chapt.split(' ')[1].split('.')[1]
-            '''
-            #Vol.01 Ch.003 - Watch Out! 
-            Vol.1 Chapter 4  The Brigand Tsujikaze
-            '''
-        elif vol_format==2.1:
-            #_"Ch.XX"          >>OK
-            num = chapt.split(' ')[0].split('.')[1]
-        else:
-            #_"Chapter XX ..." >>OK
-            num = chapt.split(' ')[1]
-        """
         try:
             y = re.search(r'Chapter \d+',chapt).group(0)
         except:
@@ -129,11 +111,16 @@ def chapt_renamer(Name_path, mode, dic, volumes, arc, manga, xlsx, TBD):
                 y = re.search(r'Ch.\d+',chapt).group(0)
             except:
                 # Format MangaSee ...
-                for x in hk_chapt_name:
+                iterr = True
+                c = 0
+                while iterr == True:
+                    x = hk_chapt_name[c]
                     try:
                         var = x + ' \d+'
                         y = re.search(var,chapt).group(0)
+                        iterr = False
                     except:
+                        c+=1
                         pass
         num = re.findall(r'\d+',y)[0]
         try:

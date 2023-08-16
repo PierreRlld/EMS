@@ -38,17 +38,28 @@ def excel_col_name(x):
 
 def manga_select():
 
-    f = pd.read_excel("origin.xlsx", sheet_name="SETTINGS",usecols="O,N")
+    f = pd.read_excel("origin.xlsx", sheet_name="SETTINGS",usecols="O,N,H")
+    df_tbd = f[f['up.py']==True][['edit_name','TBD']]
+    df_tbd.set_index('edit_name',drop=True,inplace=True)
     df = f[f['up.py']==True][['edit_name']]
     df.sort_values('edit_name',inplace=True)
     manga_list = df['edit_name'].to_list()
     q_manga = [
     inquirer.List(name='manga_choice',
-                    message="Quel manga à update",
+                    message="Quel manga à DL",
                     choices=manga_list+['↪ Quit'],
                     carousel=True,
                 )
     ]
+
+    a_manga = inquirer.prompt(q_manga, theme=CustomTheme(), raise_keyboard_interrupt=True)['manga_choice']
+    if a_manga == "↪ Quit":
+        quit()
+    tbd_exist = df_tbd.loc[a_manga]['TBD']
+    if tbd_exist == True:
+        scan_mode_ch = ['all','TBD update','select']
+    else:
+        scan_mode_ch = ['all','select']
     q_param = [
     inquirer.List(name='cover_update',
                      message="Update covers",
@@ -56,13 +67,9 @@ def manga_select():
                      carousel=True),
     inquirer.List(name='scan_mode',
                      message="Scan update mode",
-                     choices=['all','TBD update','select'],
+                     choices=scan_mode_ch,
                      carousel=True)
     ]
-
-    a_manga = inquirer.prompt(q_manga, theme=CustomTheme(), raise_keyboard_interrupt=True)['manga_choice']
-    if a_manga == "↪ Quit":
-        quit()
     p_param = inquirer.prompt(q_param, theme=CustomTheme(), raise_keyboard_interrupt=True)
     a_cover, a_mode = p_param['cover_update'],p_param['scan_mode']
     a_manga = name_code(a_manga)
@@ -70,7 +77,7 @@ def manga_select():
     if a_mode == 'select':
         q_scan = [
             inquirer.Text("start_scan", message="Start scan"),
-            inquirer.Text("end_scan", message="End scan")
+            inquirer.Text("end_scan", message="End scan [int ou 'max']")
         ]
         p_scan = inquirer.prompt(q_scan, theme=CustomTheme(), raise_keyboard_interrupt=True)
         if p_scan['end_scan'].isnumeric() == False:
@@ -236,6 +243,31 @@ def source_dl():
         print(df.to_markdown())
     return()
 
+def check_converted():
+    dispo = []
+    for el in os.listdir(converted):
+        if ('Complete' in el) == False:
+            dispo.append(el.split(' ',1)[1])
+        else:
+            dispo.append(el.split('Complete - ')[1])
+    dispo.sort()
+    return dispo
+
+def tbd_replace(manga,pth):
+    fold = [x for x in os.listdir(converted) if manga in x][0]
+    try:os.remove(converted+fold+"/"+manga+" VolTBD.cbz")
+    except:pass
+    try:os.remove(converted+fold+"/"+manga+" VolTBD.zip")
+    except:pass
+    move(pth+'/'+manga+' VolTBD.zip',converted+fold+"/"+manga+" VolTBD.zip")
+    rmtree(pth,ignore_errors=True)
+
+
+
+
+
+
+
 
 # ========================== #
 if __name__ == "__main__":
@@ -260,12 +292,12 @@ if __name__ == "__main__":
         q_origin = [
             inquirer.List(name='origin',
                     message="",
-                    choices=['Edit manga','Add manga']+['↪ Quit'],
+                    choices=['Existing manga','Add manga']+['↪ Quit'],
                     carousel=True,
                 )  
         ]
         a_origin = inquirer.prompt(q_origin, theme=CustomTheme(), raise_keyboard_interrupt=True)["origin"]
-        if a_origin == 'Edit manga':
+        if a_origin == 'Existing manga':
             edit_origin()
         elif a_origin == 'Add manga':
             add_origin()
@@ -288,7 +320,13 @@ if __name__ == "__main__":
         print('-------------------------------------------------')
         if main[1]==True:
             zp_cover_dl(manga = main[0])
-        zanpa(manga=main[0], scan_mode=main[2], arc=False)
+        zp = zanpa(manga=main[0], scan_mode=main[2])
+
+        try:
+            if main[2] == 'TBD update':
+                tbd_replace(main[0],zp)
+        except:
+            pass
     
     elif a_menu1 == "Source HakuNeko":
         source_dl()
