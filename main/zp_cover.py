@@ -47,7 +47,7 @@ def cov_dl(url, manga, update):
     for key in page_volumes :
         if key<=update:
             del dic[key]
-            next_page=False #Sert de break pour pas aller voir les pages suivantes
+            next_page=False # /!\ Sert de break pour pas aller voir les pages suivantes /!\
 
     if os.path.exists(cover_dir+manga) == False:
         os.mkdir(os.path.join(cover_dir,manga))
@@ -82,7 +82,8 @@ def zp_cover_dl(manga):
     covs = [ el for el in os.listdir(cover_dir+manga) if '._' not in el ]
     nul = '.DS_Store' in covs
     tbd = 'TBD.jpg' in covs
-    dispo = len(covs) - nul - tbd
+    zer = '0.jpg' in covs
+    dispo = len(covs) - nul - tbd - zer
     #print(dispo)
 
     pages = pages_list(url)
