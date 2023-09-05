@@ -1,5 +1,5 @@
 from main.zp_main import *
-from main.zp_cover import *
+from main.ems_cover import *
 import openpyxl
 from openpyxl.styles import PatternFill, Alignment, Font
 
@@ -264,19 +264,14 @@ def tbd_replace(manga,pth):
 
 
 
-
-
-
-
-
 # ========================== #
 if __name__ == "__main__":
     print('-------------------------------------------------')
-    try:
-        size = check_repo_size(git_pth)
-        print(">(info) Repo. Git plein à",str(round(100*(size/1000/1000),1))+"%\n")
-    except:
-        pass
+    #try:
+    #    size = check_repo_size(git_pth)
+    #    print(">(info) Repo. Git plein à",str(round(100*(size/1000/1000),1))+"%\n")
+    #except:
+    #    pass
 
     q_menu1 = [
     inquirer.List(name='menu1',
