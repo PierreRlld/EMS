@@ -9,4 +9,15 @@ converted = '/Volumes/222EXT/Converted/'
 git_pth = "https://github.com/PierreRlld/EMS"
 
 # Noms de chapt =/= de "Ch.X" ou "Chapter X"
-hk_chapt_name = ['Page','Days','Kapitel','Lesson','Level','Episode','No.', 'Quarter', "#", "Prologue", "Class", "Z="]
+hk_chapt_name = ['Page',
+                 'Days',
+                 'Kapitel',
+                 'Lesson',
+                 'Level',
+                 'Episode',
+                 'No.',
+                 'Quarter',
+                 "#",
+                 "Prologue",
+                 "Class",
+                 "Z="]

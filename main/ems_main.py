@@ -28,7 +28,8 @@ def get_dic(Name, Name_path, xlsx):
         return df_dic
     
     #except ValueError:
-    except KeyError:
+    #except KeyError:
+    except:
         chapt_list = os.listdir(base_path+Name_path)
         nul = [".DS_Store", "._.DS_Store"]
         for ele in nul:
@@ -57,7 +58,10 @@ def get_dic(Name, Name_path, xlsx):
                             c+=1
                             pass
             chapt = round(float(re.findall(r'\d+',y)[0]))
-            vol = round(float(re.findall(r'\d+',re.search(r'Vol.\d+',el).group(0))[0]))
+            try:
+                vol = round(float(re.findall(r'\d+',re.search(r'Vol.\d+',el).group(0))[0]))
+            except:
+                raise ValueError("ERROR IN get_dic > verif. Vol.X (..) format OU inclusion dans 'SETTINGS'")
             spe_dic[chapt]=vol
         return spe_dic
 
@@ -84,7 +88,10 @@ def zanpa(manga: str, scan_mode):
     '''
     xlsx = pd.ExcelFile('origin.xlsx')
     set = get_settings(manga, xlsx)
-    manga_dic = get_dic(manga, set['Manga_path'], xlsx)
+    try:
+        manga_dic = get_dic(manga, set['Manga_path'], xlsx)
+    except:
+        return("ERROR IN get_dic > verif. Vol.X (..) format OU inclusion dans 'SETTINGS'")
     #print(manga_dic, len(manga_dic))
     manga_path = set['Manga_path']
     print('>>> Converting '+manga_path)
