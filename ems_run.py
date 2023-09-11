@@ -1,4 +1,4 @@
-from main.zp_main import *
+from main.ems_main import *
 from main.ems_cover import *
 import openpyxl
 from openpyxl.styles import PatternFill, Alignment, Font
@@ -315,7 +315,7 @@ if __name__ == "__main__":
         print('-------------------------------------------------')
         if main[1]==True:
             zp_cover_dl(manga = main[0])
-        zp = zanpa(manga=main[0], scan_mode=main[2])
+        zp = EMS_central(manga=main[0], scan_mode=main[2])
 
         try:
             if main[2] == 'TBD update':

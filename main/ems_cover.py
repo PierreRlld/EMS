@@ -1,8 +1,8 @@
 import bs4
 from urllib import request
 import requests
-from main.zp_configure import *
-from zp_folder_pth import *
+from main.ems_configure import *
+from ems_folder_pth import *
 
 #--------------------
 def url_request(url):
