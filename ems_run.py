@@ -89,6 +89,19 @@ def manga_select():
         return(a_manga,a_cover, a_mode)
 
 def edit_origin():
+    
+    def value_update(a:str):
+        out = []
+        for x in a.split(','):
+            try:
+                out.append(int(x))
+            except:
+                if x.lower() in ["na","n/a","n#a","#na"]:
+                    print('ok')
+                    out.append("=NA()")
+                else:
+                    raise ValueError
+        return out
 
     f = pd.read_excel("origin.xlsx", sheet_name="SETTINGS",usecols="O,C")
     df = f[f["Chapt"].isin(["F"])==False][['edit_name']]
@@ -150,8 +163,11 @@ def edit_origin():
                 quit()
             else:
                 vols[vols.index(vol)] = "TBD"
+    
+    #try:
+    #    chapts = [int(x) for x in a_update["chapts"].split(',')]
     try:
-        chapts = [int(x) for x in a_update["chapts"].split(',')]
+        chapts = value_update(a_update["chapts"])
     except ValueError:
         print(term.red('>> Value error in Chapts'))
         quit()
@@ -161,7 +177,15 @@ def edit_origin():
         ws.cell(row=pd_wb[v],column=col_n).value = updates[v]
         ws.cell(row=pd_wb[v],column=col_n).alignment = Alignment(horizontal="center", vertical="center")
     wb.save('origin.xlsx')
-    #print(term.gold3("➜ Aller maj onglet SETTINGS"))
+    g2 = pd.read_excel("origin.xlsx", sheet_name="UPDATE",usecols="A,"+excel_col_name(col_n))
+    g2 = g2.set_index("Vol",drop=True)
+    g2.dropna(inplace=True)
+    g2 = g2.astype({a_manga: int})
+    print(g2.head().to_markdown())
+    
+    # TODO : ajouter un tableau qui répertorie les dates d'update
+    date_df = pd.read_excel("origin.xlsx", sheet_name="update_date",usecols="A,B")
+    
     return()
 
 def add_origin():
@@ -175,7 +199,7 @@ def add_origin():
     ml = [c.value for c in ws["1"] if c.value != None]
 
     if (a_manga.lower() in [x.lower() for x in ml]) == True:
-        print(term.gold3('➜ {} déjà dans UPDATE'.format(a_manga)))
+        print(term.steelblue3('➜ {} déjà dans UPDATE'.format(a_manga)))
         edit_origin()
     
     else:
@@ -214,8 +238,11 @@ def add_origin():
             ws.cell(row=row,column=col_n).value = "=NA()"
             if row == 2:
                 ws.cell(row=row,column=col_n).fill = PatternFill(fill_type='solid',start_color='00FFFF00',end_color='00FFFF00')
+        
         wb.save('origin.xlsx')
-        print(term.gold3("➜ Aller maj onglet SETTINGS"))
+        #print(term.steelblue3("➜ Aller maj onglet SETTINGS"))
+        
+        # TODO : ajouter un tableau qui répertorie les dates d'update
         return()
 
 def source_dl():
@@ -243,7 +270,7 @@ def source_dl():
         print(df.to_markdown())
     return()
 
-def check_converted():
+def check_converted():  #* (pq?)
     dispo = []
     for el in os.listdir(converted):
         if ('Complete' in el) == False:
@@ -254,14 +281,16 @@ def check_converted():
     return dispo
 
 def tbd_replace(manga,pth):
-    fold = [x for x in os.listdir(converted) if manga in x][0]
-    try:os.remove(converted+fold+"/"+manga+" VolTBD.cbz")
-    except:pass
-    try:os.remove(converted+fold+"/"+manga+" VolTBD.zip")
-    except:pass
-    move(pth+'/'+manga+' VolTBD.zip',converted+fold+"/"+manga+" VolTBD.zip")
-    rmtree(pth,ignore_errors=True)
-
+    try:
+        fold = [x for x in os.listdir(converted) if manga in x][0]
+        try:os.remove(converted+fold+"/"+manga+" VolTBD.cbz")
+        except:pass
+        try:os.remove(converted+fold+"/"+manga+" VolTBD.zip")
+        except:pass
+        move(pth+'/'+manga+' VolTBD.zip',converted+fold+"/"+manga+" VolTBD.zip")
+        rmtree(pth,ignore_errors=True)
+    except:
+        print("<Erreur> pas de dossier pour {0} dans $ '{1}'".format(manga,converted))
 
 
 # ========================== #
@@ -276,14 +305,14 @@ if __name__ == "__main__":
     q_menu1 = [
     inquirer.List(name='menu1',
                     message="",
-                    choices=['DL',"Access 'origin.xlsx'",'Source HakuNeko']+['↪ Quit'],
+                    choices=['DL',"Edit 'origin.xlsx'",'Check updates','Source HakuNeko',"Open 'origin.xlsx"]+['↪ Quit'],
                     carousel=True,
                 )  
     ]
     a_menu1 = inquirer.prompt(q_menu1, theme=CustomTheme(), raise_keyboard_interrupt=True)["menu1"]
 
     # ## edit origin.xlsx
-    if a_menu1 == "Access 'origin.xlsx'":
+    if a_menu1 == "Edit 'origin.xlsx'":
         q_origin = [
             inquirer.List(name='origin',
                     message="",
@@ -294,8 +323,16 @@ if __name__ == "__main__":
         a_origin = inquirer.prompt(q_origin, theme=CustomTheme(), raise_keyboard_interrupt=True)["origin"]
         if a_origin == 'Existing manga':
             edit_origin()
+            print(term.seashell4(">> Save 'origin.xlsx' et fermer"))
+            os.system("open origin.xlsx")
+            input(term.seashell4(">> 'Entrer' quand sauvegarde faite: "))
+            print('Done ✅')
         elif a_origin == 'Add manga':
             add_origin()
+            print(term.seashell4(">> Save 'origin.xlsx' et fermer"))
+            os.system("open origin.xlsx")
+            input(term.seashell4(">> 'Entrer' quand sauvegarde faite: "))
+            print('Done ✅')
         else:
             quit()
 
@@ -314,20 +351,25 @@ if __name__ == "__main__":
             quit()
         print('-------------------------------------------------')
         if main[1]==True:
-            zp_cover_dl(manga = main[0])
+            ems_cover_dl(manga = main[0])
         zp = EMS_central(manga=main[0], scan_mode=main[2])
-
+        time.sleep(1)
         try:
             if main[2] == 'TBD update':
                 tbd_replace(main[0],zp)
         except:
             pass
     
+    elif a_menu1 == "Check updates":
+        pass
+    
     elif a_menu1 == "Source HakuNeko":
         source_dl()
 
-    else:
-        quit()
+    elif a_menu1 == "Open 'origin.xlsx":
+        os.system("open origin.xlsx")
+    
+    else:quit()
 
-    # ##
-    print(term.gray90('\n28ix®'))
+    #$
+    print(term.steelblue3('\n28ix~ $'))

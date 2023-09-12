@@ -69,7 +69,7 @@ def get_dic(Name, Name_path, xlsx):
             try:
                 vol = round(float(re.findall(r'\d+',re.search(r'Vol.\d+',el).group(0))[0]))
             except:
-                raise ValueError("ERROR IN get_dic > verif. Vol.X (..) format OU inclusion dans 'SETTINGS'")
+                raise ValueError("<Erreur> dans 'get_dic' > verif. Vol.X (..) format OU inclusion dans 'SETTINGS'")
             spe_dic[chapt]=vol
         return spe_dic
 
@@ -83,8 +83,7 @@ def meta_group_chapt(el_list, mode, volumes, pth, dic, TBD):
         if type(mode)==list or mode=='TBD update':
             if mode == 'TBD update':
                 if TBD==False:
-                    print('ERROR MODE DANS REMOVE_VOL')
-                    return 'ERROR MODE DANS REMOVE_VOL'
+                    return "<Erreur> TBD=False dans 'chapt_select'"
                 else:
                     start_vol, end_vol = 'TBD', 'TBD'
             else:
@@ -141,19 +140,24 @@ def meta_group_chapt(el_list, mode, volumes, pth, dic, TBD):
     
     to_omit = chapt_select(mode=mode,dic=dic,volumes=volumes,TBD=TBD)
     
-    if TBD==True:
-        group['TBD'] = []
+    if to_omit=="<Erreur> TBD=False dans 'chapt_select'":
+        print("<Erreur> TBD=False dans 'chapt_select'")
+        quit()
+    
+    else:
+        if TBD==True:
+            group['TBD'] = []
 
-    for el in el_list:
-        try:
-            #vol = dic[round(float(el[long::].split(' ')[1].split(' ')[1].split('/')[0]))]   #<Vol.XX Chapter-XX>
-            vol = dic[round(float(el[long::].split(' ')[2].split('/')[0]))]     #<Vol.XX Chapter XX>
-            if vol not in to_omit:
-                group[vol].append(el)
-        except:
-            pass
+        for el in el_list:
+            try:
+                #vol = dic[round(float(el[long::].split(' ')[1].split(' ')[1].split('/')[0]))]   #<Vol.XX Chapter-XX> <old>
+                vol = dic[round(float(el[long::].split(' ')[2].split('/')[0]))]                  #<Vol.XX Chapter XX> 
+                if vol not in to_omit:
+                    group[vol].append(el)
+            except:
+                pass
 
-    return group    
+        return group    
 
 #-----------------------
 #-----------------------
@@ -167,26 +171,28 @@ def EMS_central(manga: str, scan_mode):
     try:
         manga_dic = get_dic(manga, set['Manga_path'], xlsx)
     except:
-        return("ERROR IN get_dic > verif. Vol.X (..) format OU inclusion dans 'SETTINGS'")
+        return()
     #print(manga_dic, len(manga_dic))
     manga_path = set['Manga_path']
     print('>>> Converting '+manga_path)
     
     dir_name = clean_path+manga_path+"*"
-    filePaths = retrieve_file_paths(dir_name)
     
-    chapt_central(Name_path=manga_path,dic=manga_dic)
+    chapt_central(Name_path=manga_path,dic=manga_dic)   #! (1)
+    filePaths = retrieve_file_paths(dir_name)           #! (2)
+    
     grouped = meta_group_chapt(el_list=filePaths, mode=scan_mode, volumes=int(set['Volumes']), 
                                 pth=dir_name, dic=manga_dic, TBD=set['TBD'])   
 
     fold_id = "_"+str(len(next(os.walk(output_dir))[1]))
     os.mkdir(os.path.join(output_dir, " ".join([today+fold_id, manga])))
     nb_converted_vol = len([k for k in list(grouped.keys()) if grouped[k]!=[]]) 
-    with tqdm(total=nb_converted_vol) as pbar:
+    with tqdm(total=nb_converted_vol, ascii=True) as pbar:
         for vol in list(grouped.values()) : 
             if vol!=[]:
                 num = list(grouped.keys())[ list(grouped.values()).index(vol) ]     #key dans le dic à partir élément = bon num volume
                 zip_file = zipfile.ZipFile(output_dir+today+fold_id+' '+manga+'/'+manga+' Vol'+str(num)+'.zip', mode='w', compression=zipfile.ZIP_DEFLATED)
+                pbar.set_description("Processing Vol.%s" % num)
                 with zip_file:
                     try:
                         cover = cover_dir+manga+'/'+str(num)+'.jpg'

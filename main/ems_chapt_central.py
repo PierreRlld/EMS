@@ -5,6 +5,7 @@ from math import floor
 from shutil import copytree
 from tqdm import tqdm
 import re
+from yaspin import yaspin
 from ems_folder_pth import *
 #from main.zp_configure import retrieve_file_paths
 
@@ -51,6 +52,17 @@ def chapt_central(Name_path, dic):
     input_path = base_path+Name_path
     save_path = clean_path+Name_path+"*"
     
+    try:
+        os.remove(clean_path+".DS_Store")
+    except:pass
+    try:
+        os.remove(base_path+".DS_Store")
+    except:pass
+    try:
+        os.remove(base_path+Name_path+"/'.DS_Store'")
+    except:
+        pass
+    
     if os.path.exists(save_path) == False:
         os.mkdir(save_path)
     
@@ -60,18 +72,21 @@ def chapt_central(Name_path, dic):
     else:
         save_list = []
         
-        for chapt in os.listdir(input_path):
-            if chapt not in [".DS_Store", "._.DS_Store"]:
-                try:
-                    num = chapt_search(chapt)
+        with yaspin(text="ems_chapt_central.py running").line as sp:
+            sp.side = "right"  
+            for chapt in os.listdir(input_path):
+                if chapt not in [".DS_Store", "._.DS_Store"]:
                     try:
-                        vol = dic[round(num)]
-                        df.loc[i] = [chapt, num, vol]
-                        i+=1
+                        num = chapt_search(chapt)
+                        try:
+                            vol = dic[round(num)]
+                            df.loc[i] = [chapt, num, vol]
+                            i+=1
+                        except:pass
                     except:pass
-                except:pass
-        #print(df)
-        df = rebaser(df)
+            #print(df)
+            df = rebaser(df)
+            sp.ok("✅ ")
         
         for chapt in os.listdir(save_path):
             if chapt not in [".DS_Store", "._.DS_Store"]:
@@ -82,14 +97,14 @@ def chapt_central(Name_path, dic):
                 if df.loc[j,"clean_chapt"] in save_list:
                     pass
                 else:
-                    pbar.set_description("Processing %s" % str(df.loc[j,"chapt"]))
+                    pbar.set_description("Moving %s" % str(df.loc[j,"chapt"]))
                     copytree(base_path+Name_path+"/"+str(df.loc[j,"chapt"]), save_path+"/"+str(df.loc[j,"chapt"]))
                     os.rename(save_path+"/"+str(df.loc[j,"chapt"]), save_path+"/"+"Vol."+str(df.loc[j,"vol"])+" Chapter "+f'{df.loc[j,"clean_chapt"]:.2f}') #pour garder 1.10 par ex et pas passer en 1.1
                     for file in os.listdir(base_path+Name_path+"/"+str(df.loc[j,"chapt"])):
                         try:
                             os.remove(base_path+Name_path+"/"+str(df.loc[j,"chapt"])+"/"+file)
                         except:pass
-                pbar.update(1)
+                pbar.update(1)        
 
 #--------------------
 

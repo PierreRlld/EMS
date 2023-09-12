@@ -53,8 +53,9 @@ def cov_dl(url, manga, update):
         os.mkdir(os.path.join(cover_dir,manga))
     
     nb_dl = len(list(dic.keys()))
-    with tqdm(total=nb_dl) as pbar:
+    with tqdm(total=nb_dl, ascii=True) as pbar:
         for vol in list(dic.keys()):
+            pbar.set_description("Cover Vol.%s" % vol)
             link = dic[vol]
             page = url_request(link)
             img = page.find('div',{'class':'img imgboxart issue-cover'}).find('img').get('src')
@@ -66,7 +67,7 @@ def cov_dl(url, manga, update):
 
 #--------------------
 #--------------------
-def zp_cover_dl(manga):
+def ems_cover_dl(manga):
 
     df = pd.read_excel("origin.xlsx", sheet_name="COVER")
     df = df.set_index(keys='Manga',drop=True)
@@ -91,7 +92,7 @@ def zp_cover_dl(manga):
     for page in pages :
         #print('Downloading page {0}/{1}'.format(pages.index(page)+1, len(pages)))
         if cov_dl(url = page, manga = manga, update = dispo) == False:
-            print('Done ✅')
+            print('Done ✅\n')
             return None
 
 #cov_dl(url="https://comicvine.gamespot.com/gto/4050-32732/", manga='GTO', update=0)
