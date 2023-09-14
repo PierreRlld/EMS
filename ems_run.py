@@ -1,5 +1,6 @@
 from main.ems_main import *
 from main.ems_cover import *
+from main.ems_chapt_central import chapt_search
 import openpyxl
 from openpyxl.styles import PatternFill, Alignment, Font
 
@@ -136,6 +137,7 @@ def edit_origin():
     g.dropna(inplace=True)
     g = g.astype({a_manga: int})
     print(g.head().to_markdown())
+    print('\n')
 
     decision = [
         inquirer.List('decision',choices=['Edit','↪ Quit'],carousel=True)
@@ -182,10 +184,8 @@ def edit_origin():
     g2.dropna(inplace=True)
     g2 = g2.astype({a_manga: int})
     print(g2.head().to_markdown())
-    
-    # TODO : ajouter un tableau qui répertorie les dates d'update
-    date_df = pd.read_excel("origin.xlsx", sheet_name="update_date",usecols="A,B")
-    
+    print('\n')
+        
     return()
 
 def add_origin():
@@ -268,6 +268,7 @@ def source_dl():
         df.sort_values('Source',inplace=True)
         df.set_index('Source',drop=True,inplace=True)
         print(df.to_markdown())
+        print('\n')
     return()
 
 def check_converted():  #* (pq?)
@@ -292,6 +293,74 @@ def tbd_replace(manga,pth):
     except:
         print("<Erreur> pas de dossier pour {0} dans $ '{1}'".format(manga,converted))
 
+def check_updates(mode, check_view="short"):
+    
+    g = pd.read_excel("origin.xlsx", sheet_name="SETTINGS",usecols="A,B,F,Q,R")
+    d_statut = g[["Manga_path","Statut"]].copy().set_index("Manga_path",drop=True).to_dict()["Statut"]
+    chapt_origin = g[["Manga_path","chapt_origin"]].copy().set_index("Manga_path",drop=True).to_dict()["chapt_origin"]
+    inpt = [x for x in os.listdir(base_path) if x[:2]!="._"]
+    clean = [x[:len(x)-1] for x in os.listdir(clean_path) if x[:2]!="._"]
+    s3 = set(g[g["update_monitor"]==False]["Manga_path"])
+    s1,s2 = set(inpt), set(clean)
+    
+    def statut_check(x):
+        nonlocal d_statut
+        try:
+            return d_statut[x]
+        except:
+            return '❌'
+    
+    def max_chapt(name_path):
+        max1 = -np.inf
+        max2 = -np.inf
+        
+        for el in os.listdir(base_path+name_path):
+            try:
+                chpt = int(chapt_search(el))
+                if chpt>max1:
+                    max1=chpt
+            except:pass
+        
+        for el in os.listdir(clean_path+name_path+"*"):
+            try:
+                chpt = int(chapt_search(el))
+                if chpt>max2:
+                    max2=chpt
+            except:pass
+        
+        return[max1,max2]
+            
+    if mode == "input_clean_diff":
+        df = pd.DataFrame({})
+        df["Pas dans 'clean_path'"]=list(s1.difference(s2).difference(s3))
+        df.sort_values(by="Pas dans 'clean_path'", inplace=True)
+        df.reset_index(inplace=True,drop=True)
+        df['In origin'] = df["Pas dans 'clean_path'"].apply(lambda x: x in list(g['Manga_path']))
+        df['Statut'] = df["Pas dans 'clean_path'"].apply(lambda x: statut_check(x))
+        df.set_index("Pas dans 'clean_path'",drop=True,inplace=True)
+        print(df.to_markdown())
+        return
+    
+    elif mode == "check_chapters":
+        mg_code = dict(zip(g.Manga_path, g.Manga))
+        df = pd.DataFrame({})
+        df["Manga_path"] = list(s2.intersection(s1))
+        df["Manga"] = df["Manga_path"].apply(lambda x: mg_code[x])
+        df.sort_values(by="Manga",inplace=True)
+        df.reset_index(inplace=True, drop=True)
+        df["input"],df["clean"],df["origin"] = "","",""
+        for k in range(len(df)):
+            df.loc[k,["input","clean"]] = max_chapt(df.loc[k]["Manga_path"])
+            try:
+                df.loc[k,"origin"] = int(chapt_origin[df.loc[k]["Manga_path"]])
+            except:
+                df.loc[k,"origin"] = np.nan
+        df.set_index("Manga",drop=True,inplace=True)
+        if check_view=="short":
+            print(df[df["input"]!=df["clean"]].to_markdown())
+        else:
+            print(df.to_markdown())
+        return
 
 # ========================== #
 if __name__ == "__main__":
@@ -305,7 +374,7 @@ if __name__ == "__main__":
     q_menu1 = [
     inquirer.List(name='menu1',
                     message="",
-                    choices=['DL',"Edit 'origin.xlsx'",'Check updates','Source HakuNeko',"Open 'origin.xlsx"]+['↪ Quit'],
+                    choices=['DL',"Edit 'origin.xlsx'",'Check updates','Source HakuNeko',"Open 'origin.xlsx'"]+['↪ Quit'],
                     carousel=True,
                 )  
     ]
@@ -361,12 +430,26 @@ if __name__ == "__main__":
             pass
     
     elif a_menu1 == "Check updates":
-        pass
+        q_update = [
+        inquirer.List(name='update_mode',
+                      message="",
+                      choices=["Compare input / clean","Check chapt. updates","View"]+['↪ Quit'],
+                      carousel=True)
+        ]
+        a_update = inquirer.prompt(q_update, theme=CustomTheme(), raise_keyboard_interrupt=True)["update_mode"]
+        if a_update == "Compare input / clean":
+            check_updates(mode="input_clean_diff")
+        elif a_update == "Check chapt. updates":
+            check_updates(mode="check_chapters")
+        elif a_update == "View":
+            check_updates(mode="check_chapters", check_view="long")
+        else:
+            quit()
     
     elif a_menu1 == "Source HakuNeko":
         source_dl()
 
-    elif a_menu1 == "Open 'origin.xlsx":
+    elif a_menu1 == "Open 'origin.xlsx'":
         os.system("open origin.xlsx")
     
     else:quit()

@@ -1,5 +1,80 @@
 # EMS
 
+## zp_folder_pth.py edit
+```python
+global today, base_path, clean_path, output_dir, cover_dir, git_pth, hk_chapt_name, converted
+
+#==== BASE_PATH used ====
+cover_dir = '/Volumes/222EXT/222Covers/'
+base_path = "/Volumes/222EXT/222Mangas_input/"
+clean_path = "/Volumes/222EXT/222Mangas_clean/"
+output_dir = '/Volumes/222EXT/222Mangas_output/'
+converted = '/Volumes/222EXT/Converted/'
+#git_pth = "https://github.com/PierreRlld/EMS"
+
+# Noms de chapt =/= de "Ch.X" ou "Chapter X"
+hk_chapt_name = ['Page',
+                 'Days',
+                 'Kapitel',
+                 'Lesson',
+                 'Level',
+                 'Episode',
+                 'No.',
+                 'Quarter',
+                 "#",
+                 "Prologue",
+                 "Class",
+                 "Z="]
+
+```
+Architecture:
+```
+# Base storage
+├── 222EXT
+│
+│   # Variable: cover_dir
+│   # Cover storage folder
+│   ├── 222Covers
+│   │   ├── (xxx)
+│   │   │    ├── 1.jpeg
+│   │   │    └── [...].jpeg 
+│   │   └── [...]
+│   │
+│   # Variable: base_path 
+│   # Hakuneko download output folder
+│   # Folders' name = 'Manga_path' in origin.xlsx  
+│   ├── 222Mangas_input 
+│   │   ├── (xxx)
+│   │   │    ├── 'Chapt xxx'
+│   │   │    │    └── *empty* 
+│   │   │    ├── 'Chapt xxx'
+│   │   │    │    └── *empty*
+│   │   │    └── [...]
+│   │   └── [...]
+│   │
+│   # Variable: clean_path
+│   # Cleaned version of previous folder
+│   # Updated with 'ems_chapt_central.py'
+│   ├── 222Mangas_clean
+│   │   ├── (xxx)
+│   │   │    ├── 'Vol.X Chapter X'
+│   │   │    ├── 'Vol.X Chapter X'
+│   │   │    └── [...]
+│   │   └── [...]
+│   │
+│   # Variable: output_dir
+│   # Code output folder  
+│   └── 222Mangas_output
+│   │   ├── (xxx)
+│   │   │    ├── 'XXX Vol.X.zip'
+│   │   └── [...]
+│   │
+│   # Variable: converted
+│   └── Converted
+│   │   ├── (xxx)
+│   │   └── [...]
+```
+
 ## Available
 
 
@@ -50,51 +125,6 @@
 | FMB            |                                            | \-    | \*         | <a href="https://manganato.com"><img src="https://favicon.malsync.moe/?domain=https://manganato.com"> MN</a>     | ❌      | Rename 108.6 et 108.7                |
 | BlueL          | Blue Lock                                  | \-    | 07/07/2023 | <a href="http://fanfox.net"><img src="https://favicon.malsync.moe/?domain=http://fanfox.net"> MF</a>             | ❌      |                                      |
 
-
-## zp_folder_pth.py edit
-```python
-global today, base_path, clean_path, output_dir, cover_dir
-
-#==== BASE_PATH used ====
-base_path = "/Volumes/222EXT/222Mangas_input/"
-clean_path = "/Volumes/222EXT/222Mangas_clean/"
-output_dir = '/Volumes/222EXT/222Mangas_output/'
-cover_dir = '/Volumes/222EXT/222Covers/'
-```
-Example:
-```
-# Base storage
-├── 222EXT
-│
-│   # Variable: cover_dir  
-│   # Cover storage folder  
-│   ├── 222Covers
-│   │   ├── test
-│   │   ├── test
-│   │   ├── test
-│   │   └── test
-│   │
-│   # Variable: base_path 
-│   # Hakuneko download output folder  
-│   ├── 222Mangas_input
-│   │   ├── test
-│   │   ├── test
-│   │   ├── test
-│   │   └── test
-│   │
-│   # Variable: clean_path
-│   # Intermediate folder (check if always empty after running code) 
-│   ├── 222Mangas_clean
-│   │   └── *empty*
-│   │
-│   # Variable: output_dir
-│   # Code output folder  
-│   └── 222Mangas_output
-│       ├── test
-│       ├── test
-│       ├── test
-│       └── test
-```
 
 ## Notes
 - Si pb Kindle converter conversion zip avec erreur " '._(...).jpeg' corrompu " deziper et convertir le dossier
