@@ -46,6 +46,7 @@ def chapt_search(chapt):
     num = float(re.findall(r'((\d+(\.\d*)?))',y)[0][0])
     return num
 
+#! <MAIN>
 def chapt_central(Name_path, dic):
         
     def cleaning(Name_path):

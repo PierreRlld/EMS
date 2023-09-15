@@ -10,7 +10,7 @@ import pandas as pd
 import numpy as np
 from shutil import copytree, rmtree, move
 today = str(datetime.today().strftime('%Y-%m-%d'))
-from main.ems_chapt_central import chapt_central, rebaser
+from main.ems_chapt_central import chapt_central, rebaser, chapt_search
 import re
 import inquirer
 from inquirer.themes import Default

@@ -10,6 +10,7 @@ def get_settings(Name, xlsx):
     return set.loc[Name].to_dict()
 
 def get_dic(Name, Name_path, xlsx):  
+    
     try:
         df = pd.read_excel(xlsx, sheet_name='UPDATE')
         sub = df[["Vol",Name]].copy()
@@ -47,25 +48,7 @@ def get_dic(Name, Name_path, xlsx):
                 pass
         spe_dic={}
         for el in chapt_list:
-            try:
-                y = re.search(r'Chapter ((\d+(\.\d*)?))',el).group(0)
-            except:
-                try:
-                    y = re.search(r'Ch.((\d+(\.\d*)?))',el).group(0)
-                except:
-                    # Format MangaSee ...
-                    iterr = True
-                    c = 0
-                    while iterr == True:
-                        x = hk_chapt_name[c]
-                        try:
-                            var = x + ' ((\d+(\.\d*)?))'
-                            y = re.search(var,el).group(0)
-                            iterr = False
-                        except:
-                            c+=1
-                            pass
-            chapt = float(re.findall(r'((\d+(\.\d*)?))',y)[0][0])
+            chapt = chapt_search(chapt=el)
             try:
                 vol = round(float(re.findall(r'\d+',re.search(r'Vol.\d+',el).group(0))[0]))
             except:

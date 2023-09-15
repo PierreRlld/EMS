@@ -356,13 +356,44 @@ def check_updates(mode, check_view="short"):
             except:
                 df.loc[k,"origin"] = np.nan
         df.set_index("Manga",drop=True,inplace=True)
+        
         if check_view=="short":
+            dif_df = list(df[df["input"]!=df["clean"]]["Manga_path"])
             print(df[df["input"]!=df["clean"]].to_markdown())
-        else:
+            print(term.seashell4(">> Pour update input->clean vérifier que input=origin"))
+            print("\n")
+            q_chapt1 = [
+            inquirer.List(name="up1",
+                          message="",
+                          choices=["Update clean",'↪ Quit'],
+                          carousel=True)
+            ]
+            a1 = inquirer.prompt(q_chapt1, theme=CustomTheme(), raise_keyboard_interrupt=True)["up1"]
+            if a1 == "Update clean":
+                xlsx = pd.ExcelFile('origin.xlsx')
+                
+                q_chapt2 = [
+                inquirer.Checkbox(name='up2',
+                                    message="",
+                                    choices = ["#ALL#"]+dif_df)
+                ]
+                a2 = inquirer.prompt(q_chapt2, theme=CustomTheme(), raise_keyboard_interrupt=True)["up2"]
+                if "#ALL#" in a2:
+                    a2 = dif_df
+                for el in a2:
+                    manga_dic = get_dic(mg_code[el], el, xlsx)
+                    chapt_central(Name_path=el,dic=manga_dic)
+            else:
+                quit()
+        else: # "View"
             print(df.to_markdown())
         return
 
-# ========================== #
+
+
+
+
+#* ================================================================================================================ #
 if __name__ == "__main__":
     print('-------------------------------------------------')
     #try:
@@ -380,7 +411,7 @@ if __name__ == "__main__":
     ]
     a_menu1 = inquirer.prompt(q_menu1, theme=CustomTheme(), raise_keyboard_interrupt=True)["menu1"]
 
-    # ## edit origin.xlsx
+    #* edit origin.xlsx
     if a_menu1 == "Edit 'origin.xlsx'":
         q_origin = [
             inquirer.List(name='origin',
@@ -405,7 +436,7 @@ if __name__ == "__main__":
         else:
             quit()
 
-    # ## scan download
+    #* scan download
     elif a_menu1 == "DL":
         main = manga_select()
         print(term.gold3("➜ DL {} - Cover update {} - Scan {} ?".format(*main)))
@@ -429,11 +460,12 @@ if __name__ == "__main__":
         except:
             pass
     
+    #* update input<->clean
     elif a_menu1 == "Check updates":
         q_update = [
         inquirer.List(name='update_mode',
                       message="",
-                      choices=["Compare input / clean","Check chapt. updates","View"]+['↪ Quit'],
+                      choices=["Check chapt. updates","View","Compare input / clean"]+['↪ Quit'],
                       carousel=True)
         ]
         a_update = inquirer.prompt(q_update, theme=CustomTheme(), raise_keyboard_interrupt=True)["update_mode"]
