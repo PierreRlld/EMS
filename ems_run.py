@@ -283,12 +283,13 @@ def check_converted():  #* (pq?)
 
 def tbd_replace(manga,pth):
     try:
+        #remove old TBD
         fold = [x for x in os.listdir(converted) if manga in x][0]
-        try:os.remove(converted+fold+"/"+manga+" VolTBD.cbz")
-        except:pass
-        try:os.remove(converted+fold+"/"+manga+" VolTBD.zip")
-        except:pass
-        move(pth+'/'+manga+' VolTBD.zip',converted+fold+"/"+manga+" VolTBD.zip")
+        sub_fold = [x for x in os.listdir(converted+fold) if manga in x][0]
+        os.remove(converted+fold+"/"+sub_fold)
+        #new TBD
+        new_sub_fold = os.listdir(pth)[0]
+        move(pth+"/"+new_sub_fold, converted+fold+"/"+new_sub_fold)
         rmtree(pth,ignore_errors=True)
     except:
         print("<Erreur> pas de dossier pour {0} dans $ '{1}'".format(manga,converted))

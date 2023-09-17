@@ -147,7 +147,7 @@ def meta_group_chapt(el_list, mode, volumes, pth, dic, TBD):
 def EMS_central(manga: str, scan_mode):
     '''
     @manga : name to be saved as = name in origin.xlsx
-    @scan_mode : [scan_start, scan_end] / "all" / update > scan_end (int) or "max"
+    @mode: [scan_start,scan_finish]:scan_finish (int) ou "max" /OR/ 'TBD update' /OR/ 'all'
     '''
     xlsx = pd.ExcelFile('origin.xlsx')
     set = get_settings(manga, xlsx)
@@ -174,7 +174,12 @@ def EMS_central(manga: str, scan_mode):
         for vol in list(grouped.values()) : 
             if vol!=[]:
                 num = list(grouped.keys())[ list(grouped.values()).index(vol) ]     #key dans le dic à partir élément = bon num volume
-                zip_file = zipfile.ZipFile(output_dir+today+fold_id+' '+manga+'/'+manga+' Vol'+str(num)+'.zip', mode='w', compression=zipfile.ZIP_DEFLATED)
+                if num == "TBD":
+                    max_chapt = -np.inf
+                    for x in vol:
+                        max_chapt = max(max_chapt,chapt_search(x))
+                    zip_file = zipfile.ZipFile(output_dir+today+fold_id+' '+manga+'/'+manga+' Vol'+str(num)+" at="+str(max_chapt)+'.zip', mode='w', compression=zipfile.ZIP_DEFLATED)
+                else:zip_file = zipfile.ZipFile(output_dir+today+fold_id+' '+manga+'/'+manga+' Vol'+str(num)+'.zip', mode='w', compression=zipfile.ZIP_DEFLATED)
                 pbar.set_description("Processing Vol.%s" % num)
                 with zip_file:
                     try:
