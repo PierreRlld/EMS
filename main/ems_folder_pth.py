@@ -20,4 +20,5 @@ hk_chapt_name = ['Page',
                  "#",
                  "Prologue",
                  "Class",
-                 "Z="]
+                 "Z=",
+                 "Volume"]

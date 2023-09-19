@@ -1,7 +1,7 @@
 import bs4
 from urllib import request
 import requests
-from main.ems_configure import *
+from ems_configure import *
 from ems_folder_pth import *
 
 #--------------------
@@ -35,8 +35,10 @@ def cover_link_scraper(url):
         #link = li.find("div",{'class':'imgboxart'}).find('img').get('src')
         link = str(li.find("a").get('href'))
         link = 'https://comicvine.gamespot.com'+link
-        nb = int(li.find("p",{'class':'issue-number'}).text.split('#')[1])
-        layer[nb]=link
+        try:
+            nb = int(li.find("p",{'class':'issue-number'}).text.split('#')[1])
+            layer[nb]=link
+        except:pass
     return layer
 
 #--------------------
@@ -96,3 +98,6 @@ def ems_cover_dl(manga):
             return None
 
 #cov_dl(url="https://comicvine.gamespot.com/gto/4050-32732/", manga='GTO', update=0)
+if __name__ == "__main__":
+    manga = input("Manga code: ")
+    ems_cover_dl(manga = manga)

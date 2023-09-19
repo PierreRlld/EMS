@@ -1,4 +1,4 @@
-from main.ems_configure import *
+from ems_configure import *
 from ems_folder_pth import *
 
 #-----------------------
@@ -155,6 +155,13 @@ def EMS_central(manga: str, scan_mode):
         manga_dic = get_dic(manga, set['Manga_path'], xlsx)
     except:
         return()
+    try:
+        df_cover = pd.read_excel(xlsx, sheet_name='SETTINGS', usecols='A,S')
+        df_cover.set_index('Manga',drop=True,inplace=True)
+        df_cover = df_cover.to_dict()['cover_folder']
+        manga_cover = df_cover[manga]
+    except:
+        pass
     #print(manga_dic, len(manga_dic))
     manga_path = set['Manga_path']
     print('>>> Converting '+manga_path)
@@ -183,7 +190,7 @@ def EMS_central(manga: str, scan_mode):
                 pbar.set_description("Processing Vol.%s" % num)
                 with zip_file:
                     try:
-                        cover = cover_dir+manga+'/'+str(num)+'.jpg'
+                        cover = cover_dir+manga_cover+'/'+str(num)+'.jpg'
                         zip_file.write(cover, arcname="/0.cover/"+basename(cover))
                     except:
                         pass
