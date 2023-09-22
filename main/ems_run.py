@@ -285,8 +285,10 @@ def tbd_replace(manga,pth):
     try:
         #remove old TBD
         fold = [x for x in os.listdir(converted) if manga in x][0]
-        sub_fold = [x for x in os.listdir(converted+fold) if manga in x][0]
-        os.remove(converted+fold+"/"+sub_fold)
+        try:
+            sub_fold = [x for x in os.listdir(converted+fold) if "TBD" in x][0]
+            os.remove(converted+fold+"/"+sub_fold)
+        except:pass
         #new TBD
         new_sub_fold = os.listdir(pth)[0]
         move(pth+"/"+new_sub_fold, converted+fold+"/"+new_sub_fold)

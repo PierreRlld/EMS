@@ -21,4 +21,6 @@ hk_chapt_name = ['Page',
                  "Prologue",
                  "Class",
                  "Z=",
-                 "Volume"]
+                 "Volume",
+                 "Chat #",
+                 "Round"]
