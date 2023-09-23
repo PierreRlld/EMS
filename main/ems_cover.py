@@ -76,7 +76,7 @@ def ems_cover_dl(manga):
     try:
         url = df.loc[manga,'URL']
     except:
-        print('Cover pas dispo ☓')
+        print('>> Cover pas dispo')
         return None
 
     if os.path.exists(cover_dir+manga) == False:

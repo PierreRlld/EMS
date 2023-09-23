@@ -454,10 +454,12 @@ if __name__ == "__main__":
             quit()
         print('-------------------------------------------------')
         if main[1]==True:
-            df_cover = pd.read_excel('origin.xlsx', sheet_name='SETTINGS', usecols='A,S')
-            df_cover.set_index('Manga',drop=True,inplace=True)
-            df_cover = df_cover.to_dict()['cover_folder']
-            ems_cover_dl(manga = df_cover[main[0]])
+            try:
+                df_cover = pd.read_excel('origin.xlsx', sheet_name='SETTINGS', usecols='A,S')
+                df_cover.set_index('Manga',drop=True,inplace=True)
+                df_cover = df_cover.to_dict()['cover_folder']
+                ems_cover_dl(manga = df_cover[main[0]])
+            except:pass
         zp = EMS_central(manga=main[0], scan_mode=main[2])
         time.sleep(1)
         try:

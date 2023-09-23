@@ -23,4 +23,10 @@ hk_chapt_name = ['Page',
                  "Z=",
                  "Volume",
                  "Chat #",
-                 "Round"]
+                 "Round",
+                 "Night",
+                 "Fight",
+                 "Phase",
+                 "Log:",
+                 "Game",
+                 "Phase."]
