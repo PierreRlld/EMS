@@ -39,21 +39,40 @@ def excel_col_name(x):
 
 def manga_select():
 
-    f = pd.read_excel("origin.xlsx", sheet_name="SETTINGS",usecols="O,N,H")
+    f = pd.read_excel("origin.xlsx", sheet_name="SETTINGS",usecols="O,N,H,L")
     df_tbd = f[f['up.py']==True][['edit_name','TBD']]
     df_tbd.set_index('edit_name',drop=True,inplace=True)
-    df = f[f['up.py']==True][['edit_name']]
-    df.sort_values('edit_name',inplace=True)
-    manga_list = df['edit_name'].to_list()
-    q_manga = [
-    inquirer.List(name='manga_choice',
-                    message="Quel manga à DL",
-                    choices=manga_list+['↪ Quit'],
+    df_split = f[f['up.py']==True][['edit_name','Chapt*']]
+    df_split.sort_values('edit_name',inplace=True)
+    df_split.set_index('edit_name',drop=True,inplace=True)
+    en_cours = df_split[df_split["Chapt*"]!="F"].index.to_list()
+    finished = df_split[df_split["Chapt*"]=="F"].index.to_list()
+    #df = f[f['up.py']==True][['edit_name']]
+    #df.sort_values('edit_name',inplace=True)
+    #manga_list = df['edit_name'].to_list()
+    q_manga_type = [
+    inquirer.List(name='manga_type',
+                    message="Manga en cours ou fini? ",
+                    choices=["En cours","Fini"]+['↪ Quit'],
                     carousel=True,
                 )
     ]
-
+    a_manga_type = inquirer.prompt(q_manga_type, theme=CustomTheme(), raise_keyboard_interrupt=True)['manga_type']
+    if a_manga_type == "En cours":
+        manga_list = en_cours
+    elif a_manga_type == "Fini":
+        manga_list = finished
+    else:
+        quit()
+    q_manga = [
+        inquirer.List(name='manga_choice',
+                message="Quel manga DL? ",
+                choices=manga_list+['↪ Quit'],
+                carousel=True,
+            )
+    ]
     a_manga = inquirer.prompt(q_manga, theme=CustomTheme(), raise_keyboard_interrupt=True)['manga_choice']
+    
     if a_manga == "↪ Quit":
         quit()
     tbd_exist = df_tbd.loc[a_manga]['TBD']
@@ -61,6 +80,7 @@ def manga_select():
         scan_mode_ch = ['all','TBD update','select']
     else:
         scan_mode_ch = ['all','select']
+        
     q_param = [
     inquirer.List(name='cover_update',
                      message="Update covers",
@@ -394,8 +414,6 @@ def check_updates(mode, check_view="short"):
 
 
 
-
-
 #* ================================================================================================================ #
 if __name__ == "__main__":
     print('-------------------------------------------------')
@@ -408,7 +426,7 @@ if __name__ == "__main__":
     q_menu1 = [
     inquirer.List(name='menu1',
                     message="",
-                    choices=['DL',"Edit 'origin.xlsx'",'Check updates','Source HakuNeko',"Open 'origin.xlsx'"]+['↪ Quit'],
+                    choices=['Run EMS',"Edit 'origin.xlsx'",'Check updates','Source HakuNeko',"Open 'origin.xlsx'"]+['↪ Quit'],
                     carousel=True,
                 )  
     ]
@@ -440,7 +458,7 @@ if __name__ == "__main__":
             quit()
 
     #* scan download
-    elif a_menu1 == "DL":
+    elif a_menu1 == "Run EMS":
         main = manga_select()
         print(term.gold3("➜ DL {} - Cover update {} - Scan {} ?".format(*main)))
         conf = [

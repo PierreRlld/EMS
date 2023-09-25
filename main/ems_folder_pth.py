@@ -29,4 +29,7 @@ hk_chapt_name = ['Page',
                  "Phase",
                  "Log:",
                  "Game",
-                 "Phase."]
+                 "Phase.",
+                 "Vol.",
+                 "Act.",
+                 "Study"]

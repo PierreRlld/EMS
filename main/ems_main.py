@@ -22,14 +22,14 @@ def get_dic(Name, Name_path, xlsx):
         l.reverse()
         
         #print(l)
-        if l[0]<20:                             # * ex Berserk, Jojo4 ... ça doit marcher avec ce code là et pas l'autre
+        if l[0]<15:                             # * fonctionnement "normal"
             for j in range(l[0]+1):
                 df_dic[j] = sub_dic[l[0]]
             for k in range(1,len(l)):
                 for j in range(l[k-1]+1,l[k]+1):
                     df_dic[j] = sub_dic[l[k]]
             return df_dic
-        else:                                   # * CF Jojo1, Jojo2 etc...
+        else:                                   # * CF Berserk, Jojo2, Jojo3, GoldenBoy etc...
             for j in range(l[0]+1,l[1]+1):
                 df_dic[j] = sub_dic[l[0]]
             for k in range(1,len(l)):
