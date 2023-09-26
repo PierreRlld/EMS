@@ -84,7 +84,7 @@ def chapt_central(Name_path, dic):
     else:
         save_list = []
         
-        with yaspin(text="ems_chapt_central.py running").line as sp:
+        with yaspin(text="ems_chapt_central.py vol<->chapt").line as sp:
             sp.side = "right"  
             for chapt in os.listdir(input_path):
                 if chapt not in [".DS_Store", "._.DS_Store"]:

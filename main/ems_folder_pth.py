@@ -32,4 +32,5 @@ hk_chapt_name = ['Page',
                  "Phase.",
                  "Vol.",
                  "Act.",
-                 "Study"]
+                 "Study",
+                 "Scene"]
