@@ -1,6 +1,7 @@
 # EMS
 
 ## ems_folder_pth.py 
+
 ```python
 global today, base_path, clean_path, output_dir, cover_dir, git_pth, hk_chapt_name, converted
 
