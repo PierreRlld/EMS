@@ -2,7 +2,9 @@
 
 ## [!] installation
 install : [Hakuneko](https://hakuneko.download/)
+
 install : [Kindle Comic Converter](https://github.com/ciromattia/kcc?tab=readme-ov-file)
+
 Python installation:
 ```python
 cd
