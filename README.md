@@ -1,6 +1,26 @@
 # EMS
 
-## ems_folder_pth.py 
+## [!] installation
+install : [Hakuneko](https://hakuneko.download/)
+install : [Kindle Comic Converter](https://github.com/ciromattia/kcc?tab=readme-ov-file)
+Python installation:
+```python
+cd
+conda deactivate
+conda create -n ems python=3.10
+conda activate ems
+cd (folder_path)
+pip install -r requirements.txt
+cd main
+python3 ems_run.py
+```
+Edit .zshrc file to add the following command:
+```zsh
+alias ems@r="conda activate ems  && cd main-folder-path-from-root && python3 ems_run.py ; conda deactivate && cd"
+```
+
+
+## [!] ems_folder_pth.py : edit paths used
 
 ```python
 global today, base_path, clean_path, output_dir, cover_dir, git_pth, hk_chapt_name, converted
@@ -13,7 +33,8 @@ output_dir = '/Volumes/222EXT/222Mangas_output/'
 converted = '/Volumes/222EXT/Converted/'
 #git_pth = "https://github.com/PierreRlld/EMS"
 
-# Noms de chapt =/= de "Ch.X" ou "Chapter X"
+# Chapitres avec noms différents de "Ch.X" ou "Chapter X"
+# Compléter la liste si nécessaire
 hk_chapt_name = ['Page',
                  'Days',
                  'Kapitel',
@@ -28,10 +49,10 @@ hk_chapt_name = ['Page',
                  "Z="]
 
 ```
-Architecture:
+**Architecture**
 ```
 # Base storage
-├── 222EXT
+├── /Volumes/222EXT/
 │
 │   # Variable: cover_dir
 │   # Cover storage folder
@@ -43,7 +64,8 @@ Architecture:
 │   │
 │   # Variable: base_path 
 │   # Hakuneko download output folder
-│   # Folders' name = 'Manga_path' in origin.xlsx  
+│   # Folders'name (xxx) = 'Manga_path' in origin.xlsx
+│   # 'Chapt xxx' is an empty folder once 'ems_chapt_central.py' ran
 │   ├── 222Mangas_input 
 │   │   ├── (xxx)
 │   │   │    ├── 'Chapt xxx'
@@ -64,15 +86,18 @@ Architecture:
 │   │   └── [...]
 │   │
 │   # Variable: output_dir
-│   # Code output folder  
+│   # Code output folder for 'ems_run.py'
 │   └── 222Mangas_output
 │   │   ├── (xxx)
 │   │   │    ├── 'XXX Vol.X.zip'
 │   │   └── [...]
 │   │
 │   # Variable: converted
+│   # Stores hand-converted files
+│   # 'TBD update' option tries to replace 'XXX TBD.cbz'
 │   └── Converted
 │   │   ├── (xxx)
+│   │   │    ├── 'XXX Vol.X.cbz'
 │   │   └── [...]
 ```
 

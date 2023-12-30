@@ -4,18 +4,17 @@ import time
 from math import *
 from os.path import basename
 import zipfile
+import re
+from shutil import copytree, rmtree, move
 from datetime import datetime
 from tqdm import tqdm
 import pandas as pd
 import numpy as np
-from shutil import copytree, rmtree, move
-today = str(datetime.today().strftime('%Y-%m-%d'))
-from ems_chapt_central import chapt_central, rebaser, chapt_search
-import re
 import inquirer
 from inquirer.themes import Default
 from blessed import Terminal
-
+from ems_chapt_central import chapt_central, rebaser, chapt_search
+today = str(datetime.today().strftime('%Y-%m-%d'))
 #------------------------
 #Source: https://linuxhint.com/python_zip_file_directory/
 def retrieve_file_paths(dirName):
