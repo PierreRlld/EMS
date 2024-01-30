@@ -5,20 +5,19 @@ install : [Hakuneko](https://hakuneko.download/)
 
 install : [Kindle Comic Converter](https://github.com/ciromattia/kcc?tab=readme-ov-file)
 
-Python installation:
+Python installation, in a new terminal:
 ```python
-cd
-conda deactivate
+cd ; conda deactivate
 conda create -n ems python=3.10
 conda activate ems
-cd (folder_path)
+cd <main-folder-path-frm-root>
 pip install -r requirements.txt
 cd main
 python3 ems_run.py
 ```
 Edit .zshrc file to add the following command:
 ```zsh
-alias ems@r="conda activate ems  && cd main-folder-path-from-root && python3 ems_run.py ; conda deactivate && cd"
+alias ems@r="conda activate ems  && cd <main-folder-path-frm-root> && python3 ems_run.py ; conda deactivate && cd"
 ```
 
 
